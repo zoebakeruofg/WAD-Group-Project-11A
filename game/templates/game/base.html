@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ArtGuessr</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<header>
+    <h1>ArtGuessr</h1>
+
+    <nav>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'play' %}">Play</a>
+        <a href="{% url 'leaderboard' %}">Leaderboard</a>
+        <a href="{% url 'history' %}">History</a>
+    </nav>
+</header>
+
+<hr>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<script src="{% static 'js/game.js' %}"></script>
+
+</body>
+</html>

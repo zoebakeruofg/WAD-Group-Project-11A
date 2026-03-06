@@ -1,1 +1,36 @@
-<h1>History page working</h1>
+{% extends "game/base.html" %}
+
+{% block content %}
+
+<h2>Game History</h2>
+
+<p>Here you can view your previous game rounds and scores.</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Round</th>
+        <th>Artwork</th>
+        <th>Score</th>
+        <th>Date</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Placeholder Artwork</td>
+        <td>84</td>
+        <td>06/03/2026</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>Placeholder Artwork</td>
+        <td>76</td>
+        <td>05/03/2026</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>Placeholder Artwork</td>
+        <td>90</td>
+        <td>04/03/2026</td>
+    </tr>
+</table>
+
+{% endblock %}

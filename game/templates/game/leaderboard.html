@@ -1,1 +1,32 @@
-<h1>Leaderboard page working</h1>
+{% extends "game/base.html" %}
+
+{% block content %}
+
+<h2>Leaderboard</h2>
+
+<p>Top players ranked by average score.</p>
+
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Rank</th>
+        <th>Username</th>
+        <th>Average Score</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>PlayerOne</td>
+        <td>92</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>PlayerTwo</td>
+        <td>88</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>PlayerThree</td>
+        <td>81</td>
+    </tr>
+</table>
+
+{% endblock %}

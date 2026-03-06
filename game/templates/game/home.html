@@ -1,1 +1,17 @@
-<h1>Home page working</h1>
+{% extends "game/base.html" %}
+
+{% block content %}
+
+<h2>Welcome to ArtGuessr</h2>
+
+<p>
+Test your knowledge of famous artworks by guessing where and when they were created.
+</p>
+
+<br>
+
+<a href="{% url 'play' %}">
+    <button>Start Game</button>
+</a>
+
+{% endblock %}

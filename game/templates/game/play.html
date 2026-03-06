@@ -1,1 +1,32 @@
-<h1>Play page working</h1>
+{% extends "game/base.html" %}
+{% block content %}
+<h2>Play ArtGuessr</h2>
+
+<p>
+Look at the artwork below and enter your guesses.
+</p>
+
+<div>
+    <h3>Artwork Image</h3>
+    <p>[ Artwork image will appear here ]</p>
+</div>
+<br>
+<form>
+    <label for="continent">Continent:</label><br>
+    <input type="text" id="continent" name="continent"><br><br>
+
+    <label for="region">Region:</label><br>
+    <input type="text" id="region" name="region"><br><br>
+
+    <label for="country">Country:</label><br>
+    <input type="text" id="country" name="country"><br><br>
+
+    <label for="artist">Artist:</label><br>
+    <input type="text" id="artist" name="artist"><br><br>
+
+    <label for="year">Year:</label><br>
+    <input type="text" id="year" name="year"><br><br>
+
+    <button type="submit">Submit Guess</button>
+</form>
+{% endblock %}

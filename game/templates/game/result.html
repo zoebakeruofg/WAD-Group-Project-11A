@@ -1,1 +1,43 @@
-<h1>Result page working</h1>
+{% extends "game/base.html" %}
+
+{% block content %}
+
+<h2>Round Result</h2>
+
+<p>Your score for this round:</p>
+
+<h3>85 / 100</h3>
+
+<br>
+
+<div>
+    <h4>Your Guess</h4>
+    <ul>
+        <li>Continent: Placeholder</li>
+        <li>Region: Placeholder</li>
+        <li>Country: Placeholder</li>
+        <li>Artist: Placeholder</li>
+        <li>Year: Placeholder</li>
+    </ul>
+</div>
+
+<br>
+
+<div>
+    <h4>Correct Answer</h4>
+    <ul>
+        <li>Continent: Placeholder</li>
+        <li>Region: Placeholder</li>
+        <li>Country: Placeholder</li>
+        <li>Artist: Placeholder</li>
+        <li>Year: Placeholder</li>
+    </ul>
+</div>
+
+<br>
+
+<a href="{% url 'play' %}">
+    <button>Play Again</button>
+</a>
+
+{% endblock %}

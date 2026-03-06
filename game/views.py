@@ -25,3 +25,9 @@ def history(request):
     context = {}
 
     return render(request, "game/history.html", context)
+
+def result(request):
+
+    context = {}
+
+    return render(request, "game/result.html", context)
