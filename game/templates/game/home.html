@@ -1,17 +1,26 @@
 {% extends "game/base.html" %}
 
+{% block title %}Home | ArtGuessr{% endblock %}
+{% block header %}
+{% endblock %}
+{% block nav %}
+{% endblock %}
+
 {% block content %}
+<section class="home-card">
+    <h2 class="home-title">ArtGuessr</h2>
 
-<h2>Welcome to ArtGuessr</h2>
+    <div class="home-buttons">
+    <a href="#" class="btn-main">Create Account</a>
+    <a href="{% url 'leaderboard' %}" class="btn-main">Leaderboard</a>
+    <a href="#" class="btn-main">Log In</a>
+    <a href="{% url 'history' %}" class="btn-main">History</a>
+    <a href="#" class="btn-main">Logout</a>
+    <a href="#" class="btn-main">Change Setting</a>
+</div>
 
-<p>
-Test your knowledge of famous artworks by guessing where and when they were created.
-</p>
-
-<br>
-
-<a href="{% url 'play' %}">
-    <button>Start Game</button>
-</a>
-
+    <div class="play-button-wrapper">
+    <a href="{% url 'play' %}" class="btn-play">Play Game</a>
+</div>
+</section>
 {% endblock %}

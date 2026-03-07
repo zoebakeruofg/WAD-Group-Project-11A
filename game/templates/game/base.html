@@ -1,32 +1,39 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ArtGuessr</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ArtGuessr{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-
 <body>
 
-<header>
-    <h1>ArtGuessr</h1>
+    {% block header %}
+<header class="site-header">
+    <div class="page-wrapper nav-bar">
+        <h1 class="site-logo">
+            <a href="{% url 'home' %}">ArtGuessr</a>
+        </h1>
 
-    <nav>
-        <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'play' %}">Play</a>
-        <a href="{% url 'leaderboard' %}">Leaderboard</a>
-        <a href="{% url 'history' %}">History</a>
-    </nav>
+        {% block nav %}
+        <nav class="site-nav">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'play' %}">Play</a>
+            <a href="{% url 'leaderboard' %}">Leaderboard</a>
+            <a href="{% url 'history' %}">History</a>
+        </nav>
+        {% endblock %}
+    </div>
 </header>
+{% endblock %}
 
-<hr>
+    <main class="page-wrapper">
+        {% block content %}
+        {% endblock %}
+    </main>
 
-<main>
-    {% block content %}
-    {% endblock %}
-</main>
-
-<script src="{% static 'js/game.js' %}"></script>
-
+    <script src="{% static 'js/game.js' %}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
