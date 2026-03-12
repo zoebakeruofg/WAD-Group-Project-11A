@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-# Create your views here.
 
 def home(request):
 
@@ -26,6 +25,7 @@ def register(request):
     return render(request, "game/register.html", context)
 
 
+@login_required
 def logout(request):
 
     context = {}
@@ -35,13 +35,14 @@ def logout(request):
 
 
 
-
+@login_required
 def play(request):
 
     context = {}
 
     return render(request, "game/play.html", context)
 
+@login_required
 def result(request):
 
     context = {}
@@ -55,7 +56,7 @@ def artwork(request):
     return render(request, "game/artwork.html", context)
 
 
-    
+
 
 def leaderboard(request):
 
@@ -63,8 +64,17 @@ def leaderboard(request):
 
     return render(request, "game/leaderboard.html", context)
 
+@login_required
 def history(request):
 
     context = {}
 
     return render(request, "game/history.html", context)
+
+
+@login_required
+def settings(request):
+
+    context = {}
+
+    return render(request, "game/settings.html", context)

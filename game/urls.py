@@ -10,8 +10,8 @@ urlpatterns = [
 
 
     path(r'play/$', views.play, name='play'),
-    path(r'^result/$', views.result, name='result'),
-    path(r'^artwork/$', views.artwork, name='artwork'),
+    path(r'^result/(?P<art_id>[\w\-]+)', views.result, name='result'),
+    path(r'^artwork/(?P<session_id>[\w\-]+)', views.artwork, name='artwork'),
 
 
     path(r'leaderboard/$', views.leaderboard, name='leaderboard'),
