@@ -1,36 +1,49 @@
 {% extends "game/base.html" %}
 
+{% block title %}History | ArtGuessr{% endblock %}
+
+{% block nav %}
+{% endblock %}
+
 {% block content %}
 
-<h2>Game History</h2>
+<section class="history-card">
+    <h2 class="history-title">Game History</h2>
+    <p class="history-subtitle">Your previous rounds and scores</p>
 
-<p>Here you can view your previous game rounds and scores.</p>
+    <div class="history-table">
+        <div class="history-head row">
+            <div>Game</div>
+            <div>Artwork</div>
+            <div>Score</div>
+            <div>Date</div>
+        </div>
 
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Round</th>
-        <th>Artwork</th>
-        <th>Score</th>
-        <th>Date</th>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>Placeholder Artwork</td>
-        <td>84</td>
-        <td>06/03/2026</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>Placeholder Artwork</td>
-        <td>76</td>
-        <td>05/03/2026</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>Placeholder Artwork</td>
-        <td>90</td>
-        <td>04/03/2026</td>
-    </tr>
-</table>
+        <div class="row">
+            <div>1</div>
+            <div>Mona Lisa</div>
+            <div>80/100</div>
+            <div>12/03/2026</div>
+        </div>
+
+        <div class="row">
+            <div>2</div>
+            <div>Starry Night</div>
+            <div>65/100</div>
+            <div>11/03/2026</div>
+        </div>
+
+        <div class="row">
+            <div>3</div>
+            <div>The Scream</div>
+            <div>72/100</div>
+            <div>10/03/2026</div>
+        </div>
+    </div>
+
+    <div class="history-button-row">
+        <a href="{% url 'home' %}" class="btn-main history-home-btn">Home</a>
+    </div>
+</section>
 
 {% endblock %}

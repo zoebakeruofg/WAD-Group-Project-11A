@@ -1,43 +1,44 @@
 {% extends "game/base.html" %}
 
+{% block title %}Result | ArtGuessr{% endblock %}
+
+{% block nav %}
+{% endblock %}
+
 {% block content %}
+<section class="result-card">
+    <h2 class="result-title">Congratulations!</h2>
 
-<h2>Round Result</h2>
+    <p class="result-message">Your final score is:</p>
 
-<p>Your score for this round:</p>
+    <div class="result-score-box">65 / 100</div>
 
-<h3>85 / 100</h3>
+    <div class="result-columns">
+        <div class="result-column">
+            <h3>You guessed:</h3>
+            <ul>
+                <li>Continent ______</li>
+                <li>Region ______</li>
+                <li>Country ______</li>
+                <li>Artist ______</li>
+                <li>Year ______</li>
+            </ul>
+        </div>
 
-<br>
+        <div class="result-column">
+            <h3>Correct answer:</h3>
+            <ul>
+                <li>Continent ______</li>
+                <li>Region ______</li>
+                <li>Country ______</li>
+                <li>Artist ______</li>
+                <li>Year ______</li>
+            </ul>
+        </div>
+    </div>
 
-<div>
-    <h4>Your Guess</h4>
-    <ul>
-        <li>Continent: Placeholder</li>
-        <li>Region: Placeholder</li>
-        <li>Country: Placeholder</li>
-        <li>Artist: Placeholder</li>
-        <li>Year: Placeholder</li>
-    </ul>
+    <div class="result-button-row">
+    <a href="{% url 'play' %}" class="result-play-btn">Play Again</a>
 </div>
-
-<br>
-
-<div>
-    <h4>Correct Answer</h4>
-    <ul>
-        <li>Continent: Placeholder</li>
-        <li>Region: Placeholder</li>
-        <li>Country: Placeholder</li>
-        <li>Artist: Placeholder</li>
-        <li>Year: Placeholder</li>
-    </ul>
-</div>
-
-<br>
-
-<a href="{% url 'play' %}">
-    <button>Play Again</button>
-</a>
-
+</section>
 {% endblock %}

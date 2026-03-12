@@ -1,32 +1,57 @@
 {% extends "game/base.html" %}
 
+{% block title %}Leaderboard | ArtGuessr{% endblock %}
+
+{% block nav %}
+{% endblock %}
+
 {% block content %}
 
-<h2>Leaderboard</h2>
+<section class="leaderboard-card">
+    <h2 class="leaderboard-title">Leaderboard</h2>
+    <p class="leaderboard-subtitle">(Average score)</p>
 
-<p>Top players ranked by average score.</p>
+    <div class="leaderboard-table">
+        <div class="leaderboard-head row">
+            <div>Rank</div>
+            <div>Username</div>
+            <div>Avg Score</div>
+        </div>
 
-<table border="1" cellpadding="8">
-    <tr>
-        <th>Rank</th>
-        <th>Username</th>
-        <th>Average Score</th>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>PlayerOne</td>
-        <td>92</td>
-    </tr>
-    <tr>
-        <td>2</td>
-        <td>PlayerTwo</td>
-        <td>88</td>
-    </tr>
-    <tr>
-        <td>3</td>
-        <td>PlayerThree</td>
-        <td>81</td>
-    </tr>
-</table>
+        <div class="row">
+            <div>1.</div>
+            <div>Lebron</div>
+            <div>80/100</div>
+        </div>
+
+        <div class="row">
+            <div>2.</div>
+            <div>James</div>
+            <div>75/100</div>
+        </div>
+
+        <div class="row">
+            <div>3.</div>
+            <div>Sarah</div>
+            <div>63/100</div>
+        </div>
+
+        <div class="row">
+            <div>4.</div>
+            <div>Ramzy</div>
+            <div>30/100</div>
+        </div>
+
+        <div class="row">
+            <div>5.</div>
+            <div>Alice</div>
+            <div>12/100</div>
+        </div>
+    </div>
+
+    <div class="leaderboard-button-row">
+        <a href="{% url 'home' %}" class="btn-main leaderboard-home-btn">Home</a>
+    </div>
+</section>
 
 {% endblock %}
