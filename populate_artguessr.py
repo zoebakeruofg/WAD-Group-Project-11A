@@ -1,6 +1,11 @@
 #heavily inspired by populate_rango.py
+
 import os
-os.environ.setdefault("DJANGO.SETTINGS_MODULE", "config.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+import django
+django.setup()
+
+from game.models import Continent, Country, Region
 
 def populate():
     artists = [
@@ -73,10 +78,6 @@ def populate():
         {
             "name":"Southern Africa",
             "continent":"Africa"
-        },
-        {
-            "name":"Central Asia",
-            "continent":"Asia"
         },
         {
             "name":"Western Asia",
@@ -257,7 +258,6 @@ def populate():
                       "Poland",
                       "Moldova",
                       "Romania",
-                      "Romania",
                       "Russia",
                       "Slovakia",
                       "Ukraine"]
@@ -301,11 +301,73 @@ def populate():
                  "Papua New Guinea",
                  "Solomon Islands",
                  "Vanuatu"]
+    polynesia = ["Tonga",
+                 "Samoa",
+                 "Tuvalu"]
     micronesia = ["Kiribati",
                   "Marshall Islands",
                   "Micronesia",
                   "Nauru",
-                  "Palau",
-                  "Samoa",
-                  "Tonga",
-                  "Tuvalu"]
+                  "Palau"]
+    regions_countries = {"Northern Africa": northern_africa,
+                         "Eastern Africa": eastern_africa,
+                         "Middle Africa": middle_africa,
+                         "Southern Africa": southern_africa,
+                         "Western Africa": western_africa,
+                         "Caribbean": caribbean,
+                         "Central America": central_america,
+                         "South America": south_america,
+                         "Northern America": northern_america,
+                         "Central Asia": central_asia,
+                         "Eastern Asia": eastern_asia,
+                         "Southeastern Asia": southeastern_asia,
+                         "Southern Asia": southern_asia,
+                         "Western Asia": western_asia,
+                         "Eastern Europe": eastern_europe,
+                         "Northern Europe": northern_europe,
+                         "Southern Europe": southern_europe,
+                         "Western Europe": western_europe,
+                         "Australia and New Zealand": australia_and_new_zealand,
+                         "Melanesia": melanesia,
+                         "Micronesia": micronesia,
+                         "Polynesia": polynesia
+    }
+
+    def add_continent(name):
+        continent = Continent.objects.get_or_create(name=name)[0]
+        continent.save()
+        return continent
+    def add_region(name, continent):
+        #continent should be a Continent object?
+        region = Region.objects.get_or_create(name=name, continent=continent)[0]
+        region.save()
+        return region
+    def add_country(name, region):
+        #region should be a Region object?
+        country = Country.objects.get_or_create(name=name, region=region)[0]
+        country.save()
+        return country
+    
+    for continent in continents:
+        print("=========")
+        print("=========")
+        print("CONTINENT " + continent["name"])
+        c = add_continent(name=continent["name"])
+        for region in regions:
+            if region["continent"] == continent["name"]:
+                print("---------")
+                print("Region " + region["name"])
+                r = add_region(name=region["name"], continent=c)
+                for country in regions_countries[region["name"]]:
+                    print(country)
+                    add_country(region=r, name=country)
+    
+    #print
+    for c in Continent.objects.all():
+        for r in Region.objects.filter(continent=c):
+            for co in Country.objects.filter(region=r):
+                print(f"- {c}: {r}: {co}")
+    
+if __name__ == "__main__":
+    print("Starting Artguessr population script...")
+    populate()

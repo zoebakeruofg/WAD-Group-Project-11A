@@ -1,3 +1,6 @@
 from django.contrib import admin
+from game.models import Continent, Region, Country
 
-# Register your models here.
+admin.site.register(Continent)
+admin.site.register(Region)
+admin.site.register(Country)
