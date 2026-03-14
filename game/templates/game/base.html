@@ -12,9 +12,9 @@
     {% block header %}
 <header class="site-header">
     <div class="page-wrapper nav-bar">
-        <h1 class="site-logo">
-            <a href="{% url 'home' %}">ArtGuessr</a>
-        </h1>
+        <div class="site-logo">
+    <img src="{% static 'images/logo.png' %}" alt="ArtGuessr Logo" class="site-logo-img">
+</div>
 
         {% block nav %}
         <nav class="site-nav">
@@ -33,7 +33,10 @@
         {% endblock %}
     </main>
 
-    <script src="{% static 'js/game.js' %}"></script>
-    {% block scripts %}{% endblock %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="{% static 'js/game.js' %}"></script>
+
+{% block scripts %}{% endblock %}
 </body>
 </html>

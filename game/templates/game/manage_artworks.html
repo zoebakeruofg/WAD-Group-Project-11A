@@ -1,0 +1,74 @@
+{% extends "game/base.html" %}
+{% load static %}
+
+{% block title %}Manage Artworks | ArtGuessr{% endblock %}
+
+{% block content %}
+<section class="manage-card">
+    <div class="manage-top-row">
+        <a href="{% url 'admin_dashboard' %}" class="home-icon-link">⌂</a>
+        <h2 class="manage-title">Manage Artworks</h2>
+    </div>
+
+    <div id="artwork-action-message"></div>
+
+    <div class="artwork-top-actions">
+        <button type="button" class="add-artwork-btn" id="add-artwork-btn">+ Add Artwork</button>
+    </div>
+
+    <div class="manage-table manage-artworks-table">
+        <div class="manage-header manage-artworks-header">
+            <span>Artwork ID</span>
+            <span>Title</span>
+            <span>Artist</span>
+            <span>Country</span>
+            <span>Year</span>
+            <span>Actions</span>
+        </div>
+
+        <div class="manage-row manage-artworks-row" data-artwork-id="001">
+            <span>001</span>
+            <span>Mona Lisa</span>
+            <span>Leonardo da Vinci</span>
+            <span>Italy</span>
+            <span>1503</span>
+            <span class="action-buttons">
+                <button type="button" class="btn-edit edit-artwork-btn">Edit</button>
+                <button type="button" class="btn-delete delete-artwork-btn">Delete</button>
+            </span>
+        </div>
+
+        <div class="manage-row manage-artworks-row" data-artwork-id="002">
+            <span>002</span>
+            <span>The Starry Night</span>
+            <span>Vincent van Gogh</span>
+            <span>Netherlands</span>
+            <span>1889</span>
+            <span class="action-buttons">
+                <button type="button" class="btn-edit edit-artwork-btn">Edit</button>
+                <button type="button" class="btn-delete delete-artwork-btn">Delete</button>
+            </span>
+        </div>
+
+        <div class="manage-row manage-artworks-row" data-artwork-id="003">
+            <span>003</span>
+            <span>The Scream</span>
+            <span>Edvard Munch</span>
+            <span>Norway</span>
+            <span>1893</span>
+            <span class="action-buttons">
+                <button type="button" class="btn-edit edit-artwork-btn">Edit</button>
+                <button type="button" class="btn-delete delete-artwork-btn">Delete</button>
+            </span>
+        </div>
+    </div>
+
+    <div class="manage-bottom-row">
+        <a href="{% url 'admin_dashboard' %}" class="dashboard-btn">Dashboard</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/manage_artworks.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "game/base.html" %}
+
+{% block title %}Login | ArtGuessr{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <div class="auth-top-row">
+        <a href="{% url 'home' %}" class="home-icon-link">⌂</a>
+        <h2 class="auth-title">Login</h2>
+    </div>
+
+    <form class="auth-form">
+        <div class="auth-field">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username">
+        </div>
+
+        <div class="auth-field">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+
+        <div class="auth-field">
+            <label for="role">Login as</label>
+            <select id="role" name="role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+
+        <div class="auth-button-row">
+            <button type="submit" class="auth-btn">Login</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

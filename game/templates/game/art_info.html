@@ -1,0 +1,29 @@
+{% extends "game/base.html" %}
+
+{% block title %}Artwork Info | ArtGuessr{% endblock %}
+
+{% block content %}
+<section class="art-info-card">
+    <div class="art-info-top-row">
+        <a href="{% url 'home' %}" class="home-icon-link">⌂</a>
+        <h2 class="art-info-title">Artwork Info</h2>
+    </div>
+
+    <div class="art-info-image-box">
+        Artwork Image
+    </div>
+
+    <div class="art-info-details">
+        <p><strong>Title:</strong> N/A</p>
+        <p><strong>Year:</strong> N/A</p>
+        <p><strong>Artist:</strong> N/A</p>
+        <p><strong>Country:</strong> N/A</p>
+        <p><strong>Continent:</strong> N/A</p>
+        <p><strong>Description:</strong> This page will show information about the artwork after the game.</p>
+    </div>
+
+    <div class="art-info-button-row">
+        <a href="{% url 'play' %}" class="result-play-btn">Play Again</a>
+    </div>
+</section>
+{% endblock %}
