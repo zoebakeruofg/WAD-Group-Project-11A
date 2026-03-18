@@ -5,17 +5,18 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 import django
 django.setup()
 
-from game.models import Continent, Country, Region
+from game.models import Continent, Country, Region, Artist, Artwork
 
 def populate():
     artists = [
-        {"name":"Leonardo da Vinci"},
-        {"name":"Michelangelo"},
-        {"name":"Charles Edward Wilson"},
-        {"name":"Andy Warhol"},
-        {"name":"Katsushika Hokusai"},
-        {"name":"Chéri Samba"},
-        {"name":"Araceli Gilbert"}
+        {"name": "Leonardo da Vinci"},
+        {"name": "Michelangelo"},
+        {"name": "Vincent van Gogh"},
+        {"name": "Rembrandt"},
+        {"name": "Johannes Vermeer"},
+        {"name": "Edvard Munch"},
+        {"name": "Gustav Klimt"},
+        {"name": "Katsushika Hokusai"},
     ]
     continents = [
         {"name":"South America"},
@@ -333,41 +334,149 @@ def populate():
                          "Polynesia": polynesia
     }
 
+    artworks = [
+        {
+            "title": "Mona Lisa",
+            "artist": "Leonardo da Vinci",
+            "country": "Italy",
+            "year": 1503,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Mona_Lisa.jpg",
+        },
+        {
+            "title": "The Last Supper",
+            "artist": "Leonardo da Vinci",
+            "country": "Italy",
+            "year": 1498,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Leonardo_da_Vinci_-_Last_Supper_high_res.jpg",
+        },
+        {
+            "title": "The Creation of Adam",
+            "artist": "Michelangelo",
+            "country": "Italy",
+            "year": 1512,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Michelangelo_-_Creation_of_Adam.jpg",
+        },
+        {
+            "title": "The Starry Night",
+            "artist": "Vincent van Gogh",
+            "country": "Netherlands",
+            "year": 1889,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/ea/The_Starry_Night.jpg",
+        },
+        {
+            "title": "Sunflowers",
+            "artist": "Vincent van Gogh",
+            "country": "Netherlands",
+            "year": 1888,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/40/Vincent_Willem_van_Gogh_128.jpg",
+        },
+        {
+            "title": "The Night Watch",
+            "artist": "Rembrandt",
+            "country": "Netherlands",
+            "year": 1642,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/28/The_Nightwatch_by_Rembrandt.jpg",
+        },
+        {
+            "title": "Girl with a Pearl Earring",
+            "artist": "Johannes Vermeer",
+            "country": "Netherlands",
+            "year": 1665,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Meisje_met_de_parel.jpg",
+        },
+        {
+            "title": "The Scream",
+            "artist": "Edvard Munch",
+            "country": "Norway",
+            "year": 1893,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/The_Scream.jpg",
+        },
+        {
+            "title": "The Kiss",
+            "artist": "Gustav Klimt",
+            "country": "Austria",
+            "year": 1908,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Gustav_Klimt_016.jpg",
+        },
+        {
+            "title": "The Great Wave off Kanagawa",
+            "artist": "Katsushika Hokusai",
+            "country": "Japan",
+            "year": 1831,
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0a/The_Great_Wave_off_Kanagawa.jpg",
+        },
+    ]
+
     def add_continent(name):
         continent = Continent.objects.get_or_create(name=name)[0]
         continent.save()
         return continent
+
     def add_region(name, continent):
-        #continent should be a Continent object?
         region = Region.objects.get_or_create(name=name, continent=continent)[0]
         region.save()
         return region
+
     def add_country(name, region):
-        #region should be a Region object?
         country = Country.objects.get_or_create(name=name, region=region)[0]
         country.save()
         return country
-    
+
+    def add_artist(name):
+        artist = Artist.objects.get_or_create(name=name)[0]
+        artist.save()
+        return artist
+
+    def add_artwork(title, artist, country, year, image_url):
+        artwork = Artwork.objects.get_or_create(
+            title=title,
+            artist=artist,
+            country=country,
+            year=year,
+            defaults={"image_url": image_url},
+        )[0]
+
+        artwork.image_url = image_url
+        artwork.save()
+        return artwork
+
     for continent in continents:
         print("=========")
         print("=========")
         print("CONTINENT " + continent["name"])
         c = add_continent(name=continent["name"])
+
         for region in regions:
             if region["continent"] == continent["name"]:
                 print("---------")
                 print("Region " + region["name"])
                 r = add_region(name=region["name"], continent=c)
+
                 for country in regions_countries[region["name"]]:
                     print(country)
-                    add_country(region=r, name=country)
-    
-    #print
+                    add_country(name=country, region=r)
+
+    for artist in artists:
+        add_artist(artist["name"])
+
+    for artwork in artworks:
+        artist_obj = Artist.objects.get(name=artwork["artist"])
+        country_obj = Country.objects.get(name=artwork["country"])
+
+        add_artwork(
+            title=artwork["title"],
+            artist=artist_obj,
+            country=country_obj,
+            year=artwork["year"],
+            image_url=artwork["image_url"],
+        )
+
     for c in Continent.objects.all():
         for r in Region.objects.filter(continent=c):
             for co in Country.objects.filter(region=r):
                 print(f"- {c}: {r}: {co}")
-    
+
+
 if __name__ == "__main__":
     print("Starting Artguessr population script...")
     populate()

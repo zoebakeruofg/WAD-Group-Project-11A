@@ -2,28 +2,46 @@
 {% load static %}
 
 {% block title %}Home | ArtGuessr{% endblock %}
-{% block header %}
-{% endblock %}
+
 {% block nav %}
 {% endblock %}
 
 {% block content %}
 <section class="home-card">
+
     <div class="home-logo-wrapper">
-    <img src="{% static 'images/logo.png' %}" alt="ArtGuessr Logo" class="home-logo-img">
-</div>
+        <img src="{% static 'images/logo.png' %}" alt="ArtGuessr Logo" class="home-logo-img">
+    </div>
 
-    <div class="home-buttons">
-    <a href="{% url 'register' %}" class="btn-main">Create Account</a>
-    <a href="{% url 'leaderboard' %}" class="btn-main">Leaderboard</a>
-    <a href="{% url 'login' %}" class="btn-main">Log In</a>
-    <a href="{% url 'history' %}" class="btn-main">History</a>
-    <a href="{% url 'logout' %}" class="btn-main">Logout</a>
-    <a href="{% url 'profile_settings' %}" class="btn-main">Change Setting</a>
-</div>
+    {% if user.is_authenticated %}
+        {% if user.is_staff %}
+            <div class="home-buttons-grid logged-in-home-grid">
+                <a href="{% url 'leaderboard' %}" class="btn-main home-btn">Leaderboard</a>
+                <a href="{% url 'history' %}" class="btn-main home-btn">History</a>
+                <a href="{% url 'profile_settings' %}" class="btn-main home-btn">Settings</a>
+                <a href="{% url 'manage_users' %}" class="btn-main home-btn">Manage Users</a>
+                <a href="{% url 'manage_artworks' %}" class="btn-main home-btn">Manage Artworks</a>
+                <a href="{% url 'logout' %}" class="btn-main home-btn">Logout</a>
 
-    <div class="play-button-wrapper">
-    <a href="{% url 'play' %}" class="btn-play">Play Game</a>
-</div>
+                <a href="{% url 'play' %}" class="btn-play home-play-btn-grid">Play Game</a>
+            </div>
+        {% else %}
+            <div class="home-buttons-grid logged-in-home-grid">
+                <a href="{% url 'leaderboard' %}" class="btn-main home-btn">Leaderboard</a>
+                <a href="{% url 'history' %}" class="btn-main home-btn">History</a>
+                <a href="{% url 'profile_settings' %}" class="btn-main home-btn">Settings</a>
+                <a href="{% url 'logout' %}" class="btn-main home-btn">Logout</a>
+
+                <a href="{% url 'play' %}" class="btn-play home-play-btn-grid">Play Game</a>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="home-buttons-grid guest-home-buttons">
+            <a href="{% url 'register' %}" class="btn-main home-btn">Create Account</a>
+            <a href="{% url 'login' %}" class="btn-main home-btn">Log In</a>
+            <a href="{% url 'leaderboard' %}" class="btn-main home-btn full-width-btn">Leaderboard</a>
+        </div>
+    {% endif %}
+
 </section>
 {% endblock %}

@@ -1,6 +1,9 @@
 from django.contrib import admin
-from game.models import Continent, Region, Country
+from .models import Artist, Continent, Region, Country, Artwork, GameSession
 
+admin.site.register(Artist)
 admin.site.register(Continent)
 admin.site.register(Region)
 admin.site.register(Country)
+admin.site.register(Artwork)
+admin.site.register(GameSession)

@@ -2,37 +2,77 @@
 
 {% block title %}Result | ArtGuessr{% endblock %}
 
-{% block nav %}
-{% endblock %}
-
 {% block content %}
 <section class="result-card">
-    <h2 class="result-title">Congratulations!</h2>
-
+    <h1 class="result-title">Congratulations!</h1>
     <p class="result-message">Your final score is:</p>
 
-    <div class="result-score-box">65 / 100</div>
+    <div class="result-score-box">
+        {% if result_data %}
+            {{ result_data.score }} / 100
+        {% else %}
+            0 / 100
+        {% endif %}
+    </div>
 
     <div class="result-columns">
         <div class="result-column">
             <h3>You guessed:</h3>
             <ul>
-                <li>Continent ______</li>
-                <li>Region ______</li>
-                <li>Country ______</li>
-                <li>Artist ______</li>
-                <li>Year ______</li>
+                <li>
+                    <span>Continent</span>
+                    <span>
+                        {% if result_data %}{{ result_data.guesses.continent }}{% endif %}
+                    </span>
+                </li>
+                <li>
+                    <span>Country</span>
+                    <span>
+                        {% if result_data %}{{ result_data.guesses.country }}{% endif %}
+                    </span>
+                </li>
+                <li>
+                    <span>Artist</span>
+                    <span>
+                        {% if result_data %}{{ result_data.guesses.artist }}{% endif %}
+                    </span>
+                </li>
+                <li>
+                    <span>Year</span>
+                    <span>
+                        {% if result_data %}{{ result_data.guesses.year }}{% endif %}
+                    </span>
+                </li>
             </ul>
         </div>
 
         <div class="result-column">
             <h3>Correct answer:</h3>
             <ul>
-                <li>Continent ______</li>
-                <li>Region ______</li>
-                <li>Country ______</li>
-                <li>Artist ______</li>
-                <li>Year ______</li>
+                <li>
+                    <span>Continent</span>
+                    <span>
+                        {% if result_data %}{{ result_data.correct_answers.continent }}{% endif %}
+                    </span>
+                </li>
+                <li>
+                    <span>Country</span>
+                    <span>
+                        {% if result_data %}{{ result_data.correct_answers.country }}{% endif %}
+                    </span>
+                </li>
+                <li>
+                    <span>Artist</span>
+                    <span>
+                        {% if result_data %}{{ result_data.correct_answers.artist }}{% endif %}
+                    </span>
+                </li>
+                <li>
+                    <span>Year</span>
+                    <span>
+                        {% if result_data %}{{ result_data.correct_answers.year }}{% endif %}
+                    </span>
+                </li>
             </ul>
         </div>
     </div>

@@ -1,54 +1,64 @@
 {% extends "game/base.html" %}
+{% load static %}
 
 {% block title %}Play | ArtGuessr{% endblock %}
+
 {% block nav %}
 {% endblock %}
 
 {% block content %}
-
 <section class="play-card wireframe-play-card">
 
     <div class="play-top-row">
         <a href="{% url 'home' %}" class="home-icon-link">⌂</a>
-        <div class="score-box">Score: 0 / 100</div>
+        <div class="score-box" id="score-box">Score: 0 / 100</div>
     </div>
 
     <div class="play-image-wrapper">
-        <div class="play-image-box">
+    <div class="play-image-box">
+        {% if artwork and artwork.image_url %}
+            <img src="{{ artwork.image_url }}" alt="{{ artwork.title }}" class="play-art-image">
+        {% else %}
             Artwork Image
-        </div>
+        {% endif %}
     </div>
+</div>
 
-    <form class="guess-form">
+    <form class="guess-form" id="guess-form">
+        {% csrf_token %}
+
+        <div id="play-message"></div>
 
         <div class="guess-grid">
             <div class="guess-item">
-                <label>Continent</label>
-                <input type="text" placeholder="Answer here">
+                <label for="continent">Continent</label>
+                <input type="text" id="continent" name="continent" placeholder="Answer here">
             </div>
 
             <div class="guess-item">
-                <label>Year</label>
-                <input type="text" placeholder="Answer here">
+                <label for="year">Year</label>
+                <input type="text" id="year" name="year" placeholder="Answer here">
             </div>
 
             <div class="guess-item">
-                <label>Country</label>
-                <input type="text" placeholder="Answer here">
+                <label for="country">Country</label>
+                <input type="text" id="country" name="country" placeholder="Answer here">
             </div>
 
             <div class="guess-item">
-                <label>Artist</label>
-                <input type="text" placeholder="Answer here">
+                <label for="artist">Artist</label>
+                <input type="text" id="artist" name="artist" placeholder="Answer here">
             </div>
         </div>
 
         <div class="submit-row">
             <button type="submit" class="btn-main submit-btn-green">Submit</button>
         </div>
-
     </form>
 
 </section>
+{% endblock %}
 
+{% block scripts %}
+<script src="{% static 'js/play.js' %}"></script>
 {% endblock %}

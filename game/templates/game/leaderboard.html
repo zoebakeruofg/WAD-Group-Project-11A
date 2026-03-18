@@ -2,56 +2,34 @@
 
 {% block title %}Leaderboard | ArtGuessr{% endblock %}
 
-{% block nav %}
-{% endblock %}
-
 {% block content %}
-
 <section class="leaderboard-card">
-    <h2 class="leaderboard-title">Leaderboard</h2>
-    <p class="leaderboard-subtitle">(Average score)</p>
+    <div class="leaderboard-top-row">
+        <h2 class="leaderboard-title">Leaderboard</h2>
+    </div>
+
+    <p class="leaderboard-subtitle">Top players by total correct guesses</p>
 
     <div class="leaderboard-table">
-        <div class="leaderboard-head row">
+        <div class="row leaderboard-head">
             <div>Rank</div>
-            <div>Username</div>
-            <div>Avg Score</div>
+            <div>Player</div>
+            <div>Correct Guess</div>
         </div>
 
-        <div class="row">
-            <div>1.</div>
-            <div>N/A</div>
-            <div>N/A</div>
-        </div>
-
-        <div class="row">
-            <div>2.</div>
-            <div>N/A</div>
-            <div>N/A</div>
-        </div>
-
-        <div class="row">
-            <div>3.</div>
-            <div>N/A</div>
-            <div>N/A</div>
-        </div>
-
-        <div class="row">
-            <div>4.</div>
-            <div>N/A</div>
-            <div>N/A</div>
-        </div>
-
-        <div class="row">
-            <div>5.</div>
-            <div>N/A</div>
-            <div>N/A</div>
-        </div>
-    </div>
-
-    <div class="leaderboard-button-row">
-        <a href="{% url 'home' %}" class="btn-main leaderboard-home-btn">Home</a>
+        {% for row in leaderboard_rows %}
+            <div class="row">
+                <div>{{ forloop.counter }}</div>
+                <div>{{ row.username }}</div>
+                <div>{{ row.total_correct }}</div>
+            </div>
+        {% empty %}
+            <div class="row">
+                <div>—</div>
+                <div>No scores yet</div>
+                <div>—</div>
+            </div>
+        {% endfor %}
     </div>
 </section>
-
 {% endblock %}
