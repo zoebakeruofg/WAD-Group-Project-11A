@@ -1,13 +1,23 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Continent
+
+def get_server_side_cookie(request, cookie, default_val=None):
+    val = request.session.get(cookie)
+    if not val:
+        val = default_val
+    return val
 
 
 def home(request):
 
     context = {}
 
-    return render(request, "game/home.html", context)
+    request.session.set_test_cookie()
 
+
+
+    return render(request, "game/home.html", context)
 
 
 
@@ -34,11 +44,14 @@ def logout(request):
 
 
 
-
 @login_required
 def play(request):
 
     context = {}
+
+    if request.method == 'POST':
+        continent_guess = ContinentForm(data=request.POST)
+
 
     return render(request, "game/play.html", context)
 

@@ -4,19 +4,27 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
 
-    path(r'login/$', views.login, name='login'),
-    path(r'^register/$', views.register, name='register'),
-    path(r'^logout/$', views.logout, name='logout'),
+    path(r'login/$', views.login, name='login'), 
+    path(r'^register/$', views.register, name='register'), 
+    path(r'^logout/$', views.logout, name='logout'), 
 
 
-    path(r'play/$', views.play, name='play'),
-    path(r'^result/(?P<art_id>[\w\-]+)', views.result, name='result'),
+    path(r'play/$', views.play, name='play'), 
+    path(r'^result/', views.result, name='result'), 
     path(r'^artwork/(?P<session_id>[\w\-]+)', views.artwork, name='artwork'),
+    path(r'make_guess/', views.make_guess, name='make_guess'),
+    path(r'leaderboard/$', views.leaderboard, name='leaderboard'), 
 
 
-    path(r'leaderboard/$', views.leaderboard, name='leaderboard'),
+    path(r'history/$', views.history, name='history'), 
+    path(r'settings/$', views.settings, name='settings'), 
 
+    path(r'manage_users/', views.manage_users, name='manage_users'),
+    path(r'manage_artworks/', views.manage_artworks, name='manage_artworks'),
 
-    path(r'history/$', views.history, name='history'),
-    path(r'settings/$', views.settings, name='settings'),
+    path(r'enable_user/', views.enable_user, name='enable_user'),
+    path(r'disable_user/', views.disable_user, name='disable_user'),
+
+    path(r'artwork_information/', views.artwork_information, name='artwork_information'),
+
 ]
