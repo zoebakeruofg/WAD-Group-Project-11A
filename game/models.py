@@ -28,6 +28,10 @@ class Region(models.Model):
 
 
 class Country(models.Model):
+    class Meta:
+        verbose_name_plural = "Countries"
+        def __str__(self):
+            return self.name
     name = models.CharField(max_length=50, unique=True)
     region = models.ForeignKey(
         Region,
