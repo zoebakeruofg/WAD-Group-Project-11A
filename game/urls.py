@@ -4,14 +4,13 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
 
-    path(r'login/$', views.login, name='login'), 
-    path(r'^register/$', views.register, name='register'), 
+    path(r'login/$', views.login, name='login'),
     path(r'^logout/$', views.logout, name='logout'), 
+    path(r'^register/$', views.register, name='register'), 
 
 
     path(r'play/$', views.play, name='play'), 
     path(r'^result/', views.result, name='result'), 
-    path(r'^artwork/(?P<session_id>[\w\-]+)', views.artwork, name='artwork'),
     path(r'make_guess/', views.make_guess, name='make_guess'),
     path(r'leaderboard/$', views.leaderboard, name='leaderboard'), 
 
