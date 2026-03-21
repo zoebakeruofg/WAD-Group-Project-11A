@@ -230,7 +230,8 @@ def settings(request):
 
 @staff_member_required(login_url='login')
 def manage_users(request):
-    return render(request, "game/manage_users.html")
+    users = User.objects.all().order_by("id")
+    return render(request, "game/manage_users.html", {"users": users})
 
 @staff_member_required(login_url='login')
 def manage_artworks(request):
