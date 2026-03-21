@@ -24,6 +24,9 @@ urlpatterns = [
     path(r'enable_user/', views.enable_user, name='enable_user'),
     path(r'disable_user/', views.disable_user, name='disable_user'),
 
+    path('manage-users/enable/<int:user_id>/', views.enable_user, name='enable_user'),
+    path('manage-users/disable/<int:user_id>/', views.disable_user, name='disable_user'),
+
     path(r'artwork_information/', views.artwork_information, name='artwork_information'),
 
 ]
