@@ -189,7 +189,24 @@ def leaderboard(request):
 
 @login_required(login_url='login')
 def history(request):
-    return render(request, "game/history.html")
+
+    user_sessions = (
+        GameSession.objects
+        .select_related("artwork")
+        .filter(user=request.user)
+        .order_by("-created_at")
+    )
+
+    correct_guesses = 0
+    
+    for session in user_sessions:
+        correct_guesses += (session.score/20)
+
+    user_history_data = {
+        "user_sessions": user_sessions,
+        "correct_guesses": correct_guesses}
+
+    return render(request, "game/history.html", user_history_data)
 
 
 @login_required
@@ -205,7 +222,6 @@ def settings(request):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-
 
     return render(request, "game/settings.html")
 
@@ -225,11 +241,26 @@ def manage_artworks(request):
 
 @staff_member_required(login_url='login')
 def enable_user(request):
-    return render(request)
+
+    user_id = request.POST.get("user_id")
+
+    user = get_object_or_404(User, id=user_id)
+    user.is_active = True
+    user.save()
+
+    return JsonResponse({"success": True, "status": "active"})
+   
 
 @staff_member_required(login_url='login')
 def disable_user(request):
-    return render(request)
+    
+    user_id = request.POST.get("user_id")
+
+    user = get_object_or_404(User, id=user_id)
+    user.is_active = False
+    user.save()
+
+    return JsonResponse({"success": True, "status": "disabled"})
 
 
 
