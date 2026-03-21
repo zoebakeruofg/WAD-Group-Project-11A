@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 import random
+from django.db.models import Avg
 
 
 def home(request):
@@ -91,30 +92,49 @@ def make_guess(request):
     if str(year_guess) == str(year_answer):
         score += 20
 
+    GameSession.objects.create(
+        user=request.user,
+        artwork=artwork,
+
+        guess_continent=continent_guess,
+        guess_country=country_guess,
+
+        guess_artist=artist_guess,
+
+        guess_year=year_guess if year_guess.isdigit() else None,
+
+        score=score)
+
     result_data = {
     "score": score,
     "guesses": {
         "continent": continent_guess,
         "region": region_guess,
         "country": country_guess,
+
         "artist": artist_guess,
+
         "year": year_guess,
     },
     "correct_answers": {
         "continent": continent_answer,
         "region": region_answer,
         "country": country_answer,
+
         "artist": artist_answer,
+
         "year": year_answer,
     }}
 
     last_artwork_info = {
         "title": artwork.title,
+        "image_url": artwork.image_url,
         "artist": artwork.artist.name,
+
         "country": artwork.country.name,
         "continent": artwork.country.region.continent.name,
+
         "year": artwork.year,
-        "image_url": artwork.image_url,
     }
 
     request.session["last_result"] = result_data
@@ -125,6 +145,7 @@ def make_guess(request):
         "score": score, 
         "guesses": {
             "continent": continent_guess,
+            "region" : region_guess,
             "country": country_guess,
             "artist": artist_guess,
             "year": year_guess,
@@ -146,11 +167,23 @@ def make_guess(request):
         }
     })
 
-    return redirect("result")
-
 @login_required(login_url='login')
 def leaderboard(request):
-    return render(request, "game/leaderboard.html")
+
+    leaderboard_data = (
+        GameSession.objects
+        .values("user__username")
+        .annotate(avg_score=Avg("score"))
+        .order_by("-avg_score")
+    )
+
+    leaderboard_row_data = [
+        {"username": row["user__username"],
+        "avg_score": round(row["avg_score"], 1)}
+    ]
+    
+    for row in leaderboard_rows:
+        return render(request, "game/leaderboard.html", {"leaderboard_row_data": leaderboard_row_data})
 
 
 
@@ -202,4 +235,5 @@ def disable_user(request):
 
 
 def artwork_information(request):
-    return render(request, "game/art_info.html")
+    artwork_info = request.session.get("last_artwork_info")
+    return render(request, "game/art_info.html", {"artwork_info": artwork_info})
