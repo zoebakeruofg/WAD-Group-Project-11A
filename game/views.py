@@ -4,11 +4,11 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.db.models import Sum
 import random
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Artwork, Artist, Country
+from .models import Artwork, Artist, Country, Region, Continent
 from .models import Artwork, GameSession, AdminProfile
+from django.db.models import Avg
 
 
 ALLOWED_ADMIN_GUIDS = {
@@ -32,25 +32,31 @@ def play(request):
         return render(request, "game/play.html", {"artwork": None})
 
     artwork = random.choice(artworks)
-
     request.session["artwork_id"] = artwork.id
 
-    return render(request, "game/play.html", {"artwork": artwork})
+    continents = Continent.objects.all().order_by("name")
+    regions = Region.objects.select_related("continent").all().order_by("name")
+    countries = Country.objects.select_related("region").all().order_by("name")
 
+    return render(request, "game/play.html", {
+        "artwork": artwork,
+        "continents": continents,
+        "regions": regions,
+        "countries": countries,
+    })
 def leaderboard(request):
     leaderboard_data = (
         GameSession.objects
         .values("user__username")
-        .annotate(total_score=Sum("score"))
-        .order_by("-total_score", "user__username")
+        .annotate(avg_score=Avg("score"))
+        .order_by("-avg_score", "user__username")
     )
 
     leaderboard_rows = []
     for entry in leaderboard_data:
-        total_correct = entry["total_score"] // 25
         leaderboard_rows.append({
             "username": entry["user__username"],
-            "total_correct": total_correct,
+            "avg_score": round(entry["avg_score"], 2) if entry["avg_score"] is not None else 0,
         })
 
     context = {
@@ -290,6 +296,7 @@ def art_info(request):
 @require_POST
 def submit_guess(request):
     continent_guess = request.POST.get("continent", "").strip()
+    region_guess = request.POST.get("region", "").strip()
     country_guess = request.POST.get("country", "").strip()
     artist_guess = request.POST.get("artist", "").strip()
     year_guess = request.POST.get("year", "").strip()
@@ -311,6 +318,7 @@ def submit_guess(request):
         })
 
     correct_continent = artwork.country.region.continent.name
+    correct_region = artwork.country.region.name
     correct_country = artwork.country.name
     correct_artist = artwork.artist.name
     correct_year = str(artwork.year)
@@ -318,19 +326,22 @@ def submit_guess(request):
     score = 0
 
     if continent_guess.lower() == correct_continent.lower():
-        score += 25
+        score += 20
+    if region_guess.lower() == correct_region.lower():
+        score += 20
     if country_guess.lower() == correct_country.lower():
-        score += 25
+        score += 20
     if artist_guess.lower() == correct_artist.lower():
-        score += 25
+        score += 20
     if year_guess == correct_year:
-        score += 25
+        score += 20
 
     if request.user.is_authenticated:
         GameSession.objects.create(
             user=request.user,
             artwork=artwork,
             guess_continent=continent_guess,
+            guess_region=region_guess,
             guess_country=country_guess,
             guess_artist=artist_guess,
             guess_year=int(year_guess) if year_guess.isdigit() else None,
@@ -341,12 +352,14 @@ def submit_guess(request):
         "score": score,
         "guesses": {
             "continent": continent_guess,
+            "region": region_guess,
             "country": country_guess,
             "artist": artist_guess,
             "year": year_guess,
         },
         "correct_answers": {
             "continent": correct_continent,
+            "region": correct_region,
             "country": correct_country,
             "artist": correct_artist,
             "year": correct_year,
@@ -357,9 +370,10 @@ def submit_guess(request):
         "title": artwork.title,
         "artist": artwork.artist.name,
         "country": artwork.country.name,
+        "region": artwork.country.region.name,
         "continent": artwork.country.region.continent.name,
         "year": artwork.year,
-        "image_url": artwork.image_url,
+        "image_url": artwork.image.url if artwork.image else "",
     }
 
     return JsonResponse({
@@ -367,12 +381,14 @@ def submit_guess(request):
         "score": score,
         "guesses": {
             "continent": continent_guess,
+            "region": region_guess,
             "country": country_guess,
             "artist": artist_guess,
             "year": year_guess,
         },
         "correct_answers": {
             "continent": correct_continent,
+            "region": correct_region,
             "country": correct_country,
             "artist": correct_artist,
             "year": correct_year,
@@ -381,9 +397,10 @@ def submit_guess(request):
             "title": artwork.title,
             "artist": artwork.artist.name,
             "country": artwork.country.name,
+            "region": artwork.country.region.name,
             "continent": artwork.country.region.continent.name,
             "year": artwork.year,
-            "image_url": artwork.image_url,
+            "image_url": artwork.image.url if artwork.image else "",
         }
     })
     
@@ -394,7 +411,7 @@ def add_artwork(request):
     artist_name = request.POST.get("artist", "").strip()
     country_name = request.POST.get("country", "").strip()
     year = request.POST.get("year", "").strip()
-    image_url = request.POST.get("image_url", "").strip()
+    image = request.FILES.get("image")
 
     if not title or not artist_name or not country_name or not year:
         return JsonResponse({
@@ -410,13 +427,7 @@ def add_artwork(request):
             "message": "Year must be a number."
         })
 
-    try:
-        artist = Artist.objects.get(name__iexact=artist_name)
-    except Artist.DoesNotExist:
-        return JsonResponse({
-            "success": False,
-            "message": "Artist not found. Please use an existing artist."
-        })
+    artist, created = Artist.objects.get_or_create(name=artist_name)
 
     try:
         country = Country.objects.get(name__iexact=country_name)
@@ -431,7 +442,7 @@ def add_artwork(request):
         artist=artist,
         country=country,
         year=year,
-        image_url=image_url
+        image=image
     )
 
     return JsonResponse({
@@ -451,7 +462,7 @@ def edit_artwork(request, artwork_id):
     artist_name = request.POST.get("artist", "").strip()
     country_name = request.POST.get("country", "").strip()
     year = request.POST.get("year", "").strip()
-    image_url = request.POST.get("image_url", "").strip()
+    image = request.FILES.get("image")
 
     if not title or not artist_name or not country_name or not year:
         return JsonResponse({
@@ -475,13 +486,7 @@ def edit_artwork(request, artwork_id):
             "message": "Artwork not found."
         })
 
-    try:
-        artist = Artist.objects.get(name__iexact=artist_name)
-    except Artist.DoesNotExist:
-        return JsonResponse({
-            "success": False,
-            "message": "Artist not found. Please use an existing artist."
-        })
+    artist, created = Artist.objects.get_or_create(name=artist_name)
 
     try:
         country = Country.objects.get(name__iexact=country_name)
@@ -495,7 +500,10 @@ def edit_artwork(request, artwork_id):
     artwork.artist = artist
     artwork.country = country
     artwork.year = year
-    artwork.image_url = image_url
+
+    if image:
+        artwork.image = image
+
     artwork.save()
 
     return JsonResponse({

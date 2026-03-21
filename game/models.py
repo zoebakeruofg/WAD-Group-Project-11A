@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+import os
+import uuid
 
 class Artist(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -52,7 +54,10 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
-
+def artwork_image_upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    random_name = f"{uuid.uuid4()}.{ext}"
+    return os.path.join("artworks", random_name)
 
 class Artwork(models.Model):
     title = models.CharField(max_length=128)
@@ -67,7 +72,7 @@ class Artwork(models.Model):
         related_name="artworks"
     )
     year = models.IntegerField()
-    image_url = models.URLField(blank=True)
+    image = models.ImageField(upload_to=artwork_image_upload_path, blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -86,6 +91,7 @@ class GameSession(models.Model):
     )
 
     guess_continent = models.CharField(max_length=50, blank=True)
+    guess_region = models.CharField(max_length=50, blank=True)
     guess_country = models.CharField(max_length=50, blank=True)
     guess_artist = models.CharField(max_length=50, blank=True)
     guess_year = models.IntegerField(null=True, blank=True)

@@ -1,26 +1,11 @@
 $(document).ready(function () {
-    function getCsrfToken() {
-        let cookieValue = null;
-        let cookies = document.cookie.split(";");
-
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.startsWith("csrftoken=")) {
-                cookieValue = cookie.substring("csrftoken=".length, cookie.length);
-                break;
-            }
-        }
-
-        return cookieValue;
-    }
-
     function clearForm() {
         $("#artwork-id").val("");
         $("#artwork-title").val("");
         $("#artwork-artist").val("");
         $("#artwork-country").val("");
         $("#artwork-year").val("");
-        $("#artwork-image-url").val("");
+        $("#artwork-image").val("");
     }
 
     $("#add-artwork-btn").click(function () {
@@ -37,7 +22,7 @@ $(document).ready(function () {
         $("#artwork-artist").val(row.find(".artwork-artist").text().trim());
         $("#artwork-country").val(row.find(".artwork-country").text().trim());
         $("#artwork-year").val(row.find(".artwork-year").text().trim());
-        $("#artwork-image-url").val("");
+        $("#artwork-image").val("");
 
         $("#artwork-form-wrapper").slideDown();
         $("#artwork-action-message").hide().text("");
@@ -51,25 +36,30 @@ $(document).ready(function () {
         let artist = $("#artwork-artist").val().trim();
         let country = $("#artwork-country").val().trim();
         let year = $("#artwork-year").val().trim();
-        let imageUrl = $("#artwork-image-url").val().trim();
+        let imageFile = $("#artwork-image")[0].files[0];
+        let csrfToken = $("input[name=csrfmiddlewaretoken]").val();
 
         let url = artworkId
             ? "/manage-artworks/edit/" + artworkId + "/"
             : "/manage-artworks/add/";
 
+        let formData = new FormData();
+        formData.append("title", title);
+        formData.append("artist", artist);
+        formData.append("country", country);
+        formData.append("year", year);
+        formData.append("csrfmiddlewaretoken", csrfToken);
+
+        if (imageFile) {
+            formData.append("image", imageFile);
+        }
+
         $.ajax({
             url: url,
             type: "POST",
-            headers: {
-                "X-CSRFToken": getCsrfToken()
-            },
-            data: {
-                title: title,
-                artist: artist,
-                country: country,
-                year: year,
-                image_url: imageUrl
-            },
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function (response) {
                 if (response.success) {
                     $(".no-artworks-row").remove();
@@ -125,12 +115,13 @@ $(document).ready(function () {
     $(document).on("click", ".delete-artwork-btn", function () {
         let row = $(this).closest(".manage-artworks-row");
         let artworkId = row.data("artwork-id");
+        let csrfToken = $("input[name=csrfmiddlewaretoken]").val();
 
         $.ajax({
             url: "/manage-artworks/delete/" + artworkId + "/",
             type: "POST",
-            headers: {
-                "X-CSRFToken": getCsrfToken()
+            data: {
+                csrfmiddlewaretoken: csrfToken
             },
             success: function (response) {
                 if (response.success) {

@@ -26,6 +26,12 @@
                     </span>
                 </li>
                 <li>
+    <span>Region</span>
+    <span>
+        {% if result_data %}{{ result_data.guesses.region }}{% endif %}
+    </span>
+</li>
+                <li>
                     <span>Country</span>
                     <span>
                         {% if result_data %}{{ result_data.guesses.country }}{% endif %}
@@ -55,6 +61,12 @@
                         {% if result_data %}{{ result_data.correct_answers.continent }}{% endif %}
                     </span>
                 </li>
+                <li>
+    <span>Region</span>
+    <span>
+        {% if result_data %}{{ result_data.correct_answers.region }}{% endif %}
+    </span>
+</li>
                 <li>
                     <span>Country</span>
                     <span>

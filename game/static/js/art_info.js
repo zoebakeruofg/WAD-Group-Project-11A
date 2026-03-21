@@ -14,6 +14,7 @@ $(document).ready(function () {
     $("#art-title").text(data.artwork_info.title || "N/A");
     $("#art-year").text(data.artwork_info.year || "N/A");
     $("#art-artist").text(data.artwork_info.artist || "N/A");
+    $("#art-region").text(data.artwork_info.region || "N/A");
     $("#art-country").text(data.artwork_info.country || "N/A");
     $("#art-continent").text(data.artwork_info.continent || "N/A");
 

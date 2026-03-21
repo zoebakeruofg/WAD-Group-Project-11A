@@ -1,19 +1,4 @@
 $(document).ready(function () {
-    function getCsrfToken() {
-        let cookieValue = null;
-        let cookies = document.cookie.split(";");
-
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            if (cookie.startsWith("csrftoken=")) {
-                cookieValue = cookie.substring("csrftoken=".length, cookie.length);
-                break;
-            }
-        }
-
-        return cookieValue;
-    }
-
     $("#user-search").on("keyup", function () {
         let value = $(this).val().toLowerCase();
 
@@ -26,12 +11,13 @@ $(document).ready(function () {
     $(".enable-user-btn").click(function () {
         let row = $(this).closest(".manage-users-row");
         let userId = row.data("user-id");
+        let csrfToken = $("input[name=csrfmiddlewaretoken]").val();
 
         $.ajax({
             url: "/manage-users/enable/" + userId + "/",
             type: "POST",
-            headers: {
-                "X-CSRFToken": getCsrfToken()
+            data: {
+                csrfmiddlewaretoken: csrfToken
             },
             success: function (response) {
                 if (response.success) {
@@ -60,12 +46,13 @@ $(document).ready(function () {
     $(".disable-user-btn").click(function () {
         let row = $(this).closest(".manage-users-row");
         let userId = row.data("user-id");
+        let csrfToken = $("input[name=csrfmiddlewaretoken]").val();
 
         $.ajax({
             url: "/manage-users/disable/" + userId + "/",
             type: "POST",
-            headers: {
-                "X-CSRFToken": getCsrfToken()
+            data: {
+                csrfmiddlewaretoken: csrfToken
             },
             success: function (response) {
                 if (response.success) {

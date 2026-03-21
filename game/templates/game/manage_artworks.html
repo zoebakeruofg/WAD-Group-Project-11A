@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block title %}Manage Artworks | ArtGuessr{% endblock %}
-
 {% block content %}
 <section class="manage-card">
     <div class="manage-top-row">
@@ -12,38 +11,39 @@
     <div id="artwork-action-message"></div>
 
     <div id="artwork-form-wrapper" style="display:none; margin-bottom: 25px;">
-        <form id="artwork-form">
-            <input type="hidden" id="artwork-id">
+        <form id="artwork-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" id="artwork-id">
 
-            <div class="settings-field">
-                <label for="artwork-title">Title</label>
-                <input type="text" id="artwork-title">
-            </div>
+    <div class="settings-field">
+        <label for="artwork-title">Title</label>
+        <input type="text" id="artwork-title">
+    </div>
 
-            <div class="settings-field">
-                <label for="artwork-artist">Artist</label>
-                <input type="text" id="artwork-artist">
-            </div>
+    <div class="settings-field">
+        <label for="artwork-image">Artwork Image</label>
+        <input type="file" id="artwork-image" accept="image/*">
+    </div>
 
-            <div class="settings-field">
-                <label for="artwork-country">Country</label>
-                <input type="text" id="artwork-country">
-            </div>
+    <div class="settings-field">
+        <label for="artwork-artist">Artist</label>
+        <input type="text" id="artwork-artist">
+    </div>
 
-            <div class="settings-field">
-                <label for="artwork-year">Year</label>
-                <input type="text" id="artwork-year">
-            </div>
+    <div class="settings-field">
+        <label for="artwork-country">Country</label>
+        <input type="text" id="artwork-country">
+    </div>
 
-            <div class="settings-field">
-                <label for="artwork-image-url">Image URL</label>
-                <input type="text" id="artwork-image-url">
-            </div>
+    <div class="settings-field">
+        <label for="artwork-year">Year</label>
+        <input type="text" id="artwork-year">
+    </div>
 
-            <div class="settings-button-row" style="margin-top: 18px;">
-                <button type="submit" class="add-artwork-btn" id="save-artwork-btn">Save Artwork</button>
-            </div>
-        </form>
+    <div class="settings-button-row" style="margin-top: 18px;">
+        <button type="submit" class="add-artwork-btn" id="save-artwork-btn">Save Artwork</button>
+    </div>
+</form>
     </div>
 
     <div class="artwork-top-actions">

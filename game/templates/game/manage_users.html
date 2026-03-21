@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block title %}Manage Users | ArtGuessr{% endblock %}
+<form style="display:none;">
+    {% csrf_token %}
+</form>
 
 {% block content %}
 <section class="manage-card">
