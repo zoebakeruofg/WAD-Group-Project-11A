@@ -24,8 +24,12 @@ urlpatterns = [
     path(r'enable_user/', views.enable_user, name='enable_user'),
     path(r'disable_user/', views.disable_user, name='disable_user'),
 
-    path('manage-users/enable/<int:user_id>/', views.enable_user, name='enable_user'),
-    path('manage-users/disable/<int:user_id>/', views.disable_user, name='disable_user'),
+    path('manage_users/enable/<int:user_id>/', views.enable_user, name='enable_user'),
+    path('manage_users/disable/<int:user_id>/', views.disable_user, name='disable_user'),
+
+    path('manage_artworks/add/', views.add_artwork, name='add_artwork'),
+    path('manage_artworks/edit/<int:artwork_id>/', views.edit_artwork, name='edit_artwork'),
+        path('manage_artworks/delete/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
 
     path(r'artwork_information/', views.artwork_information, name='artwork_information'),
 
