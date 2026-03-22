@@ -18,11 +18,11 @@ def home(request):
 
 
 #user authentication
-def login(request):
+def login_view(request):
     return render(request, "game/login.html")
 
 
-def logout(request):
+def logout_view(request):
     logout(request)
     return redirect("home")
 
@@ -235,7 +235,8 @@ def manage_users(request):
 
 @staff_member_required(login_url='login')
 def manage_artworks(request):
-    return render(request, "game/manage_artworks.html")
+    artworks = Artwork.objects.select_related("artist", "country").all().order_by("id")
+    return render(request, "game/manage_artworks.html", {"artworks": artworks})
 
 
 
@@ -264,8 +265,94 @@ def disable_user(request):
     return JsonResponse({"success": True, "status": "disabled"})
 
 
+@staff_member_required(login_url='login')
+@require_POST
+def add_artwork(request):
+
+    title = request.POST.get("artwork-title", "").strip()
+    image = request.POST.get("artwork-image", "").strip()  
+    artist_name = request.POST.get("artwork-artist", "").strip()
+    country_name = request.POST.get("artwork-country", "").strip()
+    year = request.POST.get("artwork-year", "").strip()
+
+    if not title or not image or not artist_name or not country_name or not year:
+        return JsonResponse({"success": False, "message": "All fields required"})
+
+    try:
+        year = int(year)
+    except ValueError:
+        return JsonResponse({"success": False, "message": "Year must be a number"})
+
+    country = get_object_or_404(Country, name__iexact=country_name)
+    artist, _ = Artist.objects.get_or_create(name=artist_name)
+
+    artwork = Artwork.objects.create(
+        title=title,
+        artist=artist,
+        country=country,
+        year=year,
+        image=image
+    )
+
+    return JsonResponse({
+        "success": True,
+        "artwork": {
+            "id": artwork.id,
+            "title": artwork.title,
+            "artist": artwork.artist.name,
+            "country": artwork.country.name,
+            "year": artwork.year
+        }
+    })
+
+
+@staff_member_required(login_url='login')
+@require_POST
+def edit_artwork(request, artwork_id):
+
+    artwork = get_object_or_404(Artwork, id=artwork_id)
+
+    title = request.POST.get("artwork-title", "").strip()
+    image = request.POST.get("artwork-image", "").strip()  
+    artist_name = request.POST.get("artwork-artist", "").strip()
+    country_name = request.POST.get("artwork-country", "").strip()
+    year = request.POST.get("artwork-year", "").strip()
+
+    if not title or not artist_name or not country_name or not year:
+        return JsonResponse({"success": False, "message": "All fields required"})
+
+    try:
+        year = int(year)
+    except ValueError:
+        return JsonResponse({"success": False, "message": "Invalid year"})
+
+    country = get_object_or_404(Country, name__iexact=country_name)
+    artist, _ = Artist.objects.get_or_create(name=artist_name)
+
+    artwork.title = title
+    artwork.artist = artist
+    artwork.country = country
+    artwork.year = year
+
+    if image:
+        artwork.image = image
+
+    artwork.save()
+
+    return JsonResponse({"success": True})
+
+
+
+@staff_member_required(login_url='login')
+@require_POST
+def delete_artwork(request, artwork_id):
+
+    artwork = get_object_or_404(Artwork, id=artwork_id)
+    artwork.delete()
+
+    return JsonResponse({"success": True})
 
 
 def artwork_information(request):
-    artwork_info = request.session.get("last_artwork_info")
+    artwork_info = request.session.get("last_artwork")
     return render(request, "game/art_info.html", {"artwork_info": artwork_info})
