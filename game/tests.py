@@ -1,12 +1,17 @@
 from django.test import TestCase
-from .models import Artist, Continent, Region, Country, Artwork
-
-from django.test import TestCase
-from .models import Artist, Continent, Region, Country, Artwork
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from .models import AdminProfile
+from .models import (
+    Artist,
+    AdminProfile,
+    Continent,
+    Region,
+    Country,
+    Artwork,
+    GameSession,
+)
+
 
 class ModelTests(TestCase):
 
@@ -79,17 +84,20 @@ class ViewTests(TestCase):
         response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
 
-    def test_play_page_loads(self):
+    def test_play_requires_login(self):
         response = self.client.get(reverse("play"))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
 
-    def test_leaderboard_page_loads(self):
+    def test_leaderboard_requires_login(self):
         response = self.client.get(reverse("leaderboard"))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
 
-    def test_history_page_loads(self):
+    def test_history_requires_login(self):
         response = self.client.get(reverse("history"))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
 
     def test_register_page_loads(self):
         response = self.client.get(reverse("register"))
@@ -323,3 +331,186 @@ class LoginTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("home"))
+
+
+class MakeGuessTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="guessuser",
+            password="testpass123"
+        )
+
+        self.continent = Continent.objects.create(name="Europe")
+        self.region = Region.objects.create(
+            name="Western Europe",
+            continent=self.continent
+        )
+        self.country = Country.objects.create(
+            name="Netherlands",
+            region=self.region
+        )
+        self.artist = Artist.objects.create(name="Vincent van Gogh")
+
+        self.artwork = Artwork.objects.create(
+            title="Starry Night",
+            artist=self.artist,
+            country=self.country,
+            year=1889,
+            image_url="https://example.com/starrynight.jpg"
+        )
+
+    def test_make_guess_requires_login(self):
+        response = self.client.post(reverse("make_guess"), {
+            "continent": "Europe",
+            "region": "Western Europe",
+            "country": "Netherlands",
+            "artist": "Vincent van Gogh",
+            "year": "1889",
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
+
+    def test_make_guess_without_artwork_id_returns_error_json(self):
+        self.client.login(username="guessuser", password="testpass123")
+
+        response = self.client.post(reverse("make_guess"), {
+            "continent": "Europe",
+            "region": "Western Europe",
+            "country": "Netherlands",
+            "artist": "Vincent van Gogh",
+            "year": "1889",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["error"], "No artwork available")
+
+    def test_make_guess_all_correct_score_100_and_creates_session(self):
+        self.client.login(username="guessuser", password="testpass123")
+
+        session = self.client.session
+        session["artwork_id"] = self.artwork.id
+        session.save()
+
+        response = self.client.post(reverse("make_guess"), {
+            "continent": "Europe",
+            "region": "Western Europe",
+            "country": "Netherlands",
+            "artist": "Vincent van Gogh",
+            "year": "1889",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+
+        self.assertTrue(data["success"])
+        self.assertEqual(data["score"], 100)
+        self.assertEqual(GameSession.objects.count(), 1)
+
+    def test_make_guess_saves_last_result_and_last_artwork_in_session(self):
+        self.client.login(username="guessuser", password="testpass123")
+
+        session = self.client.session
+        session["artwork_id"] = self.artwork.id
+        session.save()
+
+        response = self.client.post(reverse("make_guess"), {
+            "continent": "Europe",
+            "region": "Western Europe",
+            "country": "Netherlands",
+            "artist": "Vincent van Gogh",
+            "year": "1889",
+        })
+
+        self.assertEqual(response.status_code, 200)
+
+        session = self.client.session
+        self.assertIn("last_result", session)
+        self.assertIn("last_artwork", session)
+
+
+class ResultTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="resultuser",
+            password="testpass123"
+        )
+
+    def test_result_requires_login(self):
+        response = self.client.get(reverse("result"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
+
+    def test_result_page_loads_when_logged_in(self):
+        self.client.login(username="resultuser", password="testpass123")
+
+        response = self.client.get(reverse("result"))
+        self.assertEqual(response.status_code, 200)
+
+
+class HistoryTests(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(
+            username="historyuser1",
+            password="testpass123"
+        )
+        self.user2 = User.objects.create_user(
+            username="historyuser2",
+            password="testpass123"
+        )
+
+        self.continent = Continent.objects.create(name="Europe")
+        self.region = Region.objects.create(
+            name="Western Europe",
+            continent=self.continent
+        )
+        self.country = Country.objects.create(
+            name="Netherlands",
+            region=self.region
+        )
+        self.artist = Artist.objects.create(name="Vincent van Gogh")
+
+        self.artwork = Artwork.objects.create(
+            title="Starry Night",
+            artist=self.artist,
+            country=self.country,
+            year=1889,
+            image_url="https://example.com/starrynight.jpg"
+        )
+
+        GameSession.objects.create(
+            user=self.user1,
+            artwork=self.artwork,
+            guess_continent="europe",
+            guess_country="netherlands",
+            guess_artist="vincent van gogh",
+            guess_year=1889,
+            score=80
+        )
+
+        GameSession.objects.create(
+            user=self.user2,
+            artwork=self.artwork,
+            guess_continent="asia",
+            guess_country="japan",
+            guess_artist="wrong artist",
+            guess_year=1900,
+            score=0
+        )
+
+    def test_history_requires_login(self):
+        response = self.client.get(reverse("history"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("login"), response.url)
+
+    def test_history_shows_only_current_user_sessions(self):
+        self.client.login(username="historyuser1", password="testpass123")
+
+        response = self.client.get(reverse("history"))
+        self.assertEqual(response.status_code, 200)
+
+        user_sessions = response.context["user_sessions"]
+        self.assertEqual(user_sessions.count(), 1)
+        self.assertEqual(user_sessions.first().user, self.user1)
