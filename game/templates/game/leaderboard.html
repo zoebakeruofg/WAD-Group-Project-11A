@@ -1,1 +1,35 @@
-<h1>Leaderboard page working</h1>
+{% extends "game/base.html" %}
+
+{% block title %}Leaderboard | ArtGuessr{% endblock %}
+
+{% block content %}
+<section class="leaderboard-card">
+    <div class="leaderboard-top-row">
+        <h2 class="leaderboard-title">Leaderboard</h2>
+    </div>
+
+    <p class="leaderboard-subtitle">Top players by average score</p>
+
+    <div class="leaderboard-table">
+        <div class="row leaderboard-head">
+            <div>Rank</div>
+            <div>Player</div>
+            <div>Average Score</div>
+        </div>
+
+        {% for row in leaderboard_rows %}
+            <div class="row">
+                <div>{{ forloop.counter }}</div>
+                <div>{{ row.username }}</div>
+                <div>{{ row.avg_score }}/100</div>
+            </div>
+        {% empty %}
+            <div class="row">
+                <div>—</div>
+                <div>No scores yet</div>
+                <div>—</div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

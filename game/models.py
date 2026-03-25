@@ -1,11 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
+import os
+import uuid
+
 
 class Artist(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
+
 
 class AdminProfile(models.Model):
     user = models.OneToOneField(
@@ -17,6 +21,7 @@ class AdminProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.guid}"
+
 
 class Continent(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -40,8 +45,7 @@ class Region(models.Model):
 class Country(models.Model):
     class Meta:
         verbose_name_plural = "Countries"
-        def __str__(self):
-            return self.name
+
     name = models.CharField(max_length=50, unique=True)
     region = models.ForeignKey(
         Region,
@@ -51,6 +55,12 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def artwork_image_upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    random_name = f"{uuid.uuid4()}.{ext}"
+    return os.path.join("artworks", random_name)
 
 
 class Artwork(models.Model):
@@ -66,13 +76,13 @@ class Artwork(models.Model):
         related_name="artworks"
     )
     year = models.IntegerField()
-    image_url = models.URLField(blank=True)
+    image = models.ImageField(upload_to=artwork_image_upload_path, blank=True, null=True)
 
     def __str__(self):
         return self.title
 
-class GameSession(models.Model):
 
+class GameSession(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -85,12 +95,12 @@ class GameSession(models.Model):
     )
 
     guess_continent = models.CharField(max_length=50, blank=True)
+    guess_region = models.CharField(max_length=50, blank=True)
     guess_country = models.CharField(max_length=50, blank=True)
     guess_artist = models.CharField(max_length=50, blank=True)
     guess_year = models.IntegerField(null=True, blank=True)
 
     score = models.IntegerField(default=0)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

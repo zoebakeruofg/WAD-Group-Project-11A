@@ -1,0 +1,38 @@
+{% extends "game/base.html" %}
+{% load static %}
+
+{% block title %}Artwork Info | ArtGuessr{% endblock %}
+
+{% block nav %}
+{% endblock %}
+
+{% block content %}
+<section class="art-info-card">
+    <div class="art-info-top-row">
+        <a href="{% url 'home' %}" class="home-icon-link">⌂</a>
+        <h2 class="art-info-title">Artwork Info</h2>
+    </div>
+
+    <div class="art-info-image-box">
+        <img src="" alt="Artwork Image" id="art-info-image" class="art-info-image" style="display: none;">
+        <span id="art-info-placeholder">Artwork Image</span>
+    </div>
+
+    <div class="art-info-details">
+        <p><strong>Title:</strong> <span id="art-title">N/A</span></p>
+        <p><strong>Year:</strong> <span id="art-year">N/A</span></p>
+        <p><strong>Artist:</strong> <span id="art-artist">N/A</span></p>
+        <p><strong>Country:</strong> <span id="art-country">N/A</span></p>
+        <p><strong>Continent:</strong> <span id="art-continent">N/A</span></p>
+        <p><strong>Region:</strong> <span id="art-region">N/A</span></p>
+    </div>
+
+    <div class="art-info-button-row">
+        <a href="{% url 'play' %}" class="result-play-btn">Play Again</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/art_info.js' %}"></script>
+{% endblock %}

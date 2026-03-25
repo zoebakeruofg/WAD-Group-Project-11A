@@ -1,20 +1,3 @@
-$(document).ready(function(){
-
-    $("#account_type").change(function(){
-
-        var selectedRole = $(this).val();
-
-        if(selectedRole === "admin"){
-            $("#guid-field").slideDown();
-        } else {
-            $("#guid-field").slideUp();
-        }
-
-    });
-
-});
-
-
 $(document).ready(function () {
     $("#account_type").change(function () {
         var selectedRole = $(this).val();
@@ -34,7 +17,6 @@ $(document).ready(function () {
         var role = $("#account_type").val();
         var guid = $("#guid").val().trim();
 
-        // clear old errors
         $("#form-error-message").hide().text("");
         $("input, select").removeClass("input-error");
 

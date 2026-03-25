@@ -1,1 +1,43 @@
-<h1>History page working</h1>
+{% extends "game/base.html" %}
+
+{% block title %}History | ArtGuessr{% endblock %}
+
+{% block content %}
+<section class="history-card">
+    <div class="history-top-row">
+        <h2 class="history-title">Game History</h2>
+    </div>
+
+    <p class="history-subtitle">Your previous rounds and scores</p>
+
+    <div class="history-table">
+
+    <div class="row history-head">
+        <div>#</div>
+        <div>Artwork</div>
+        <div>Correct</div>
+        <div>Score</div>
+        <div>Date</div>
+    </div>
+
+    {% for session in user_sessions %}
+        <div class="row">
+            <div>{{ forloop.counter }}</div>
+            <div>{{ session.artwork.title }}</div>
+            <div>{{ session.correct_guesses }}</div>
+            <div>{{ session.score }}</div>
+            <div>{{ session.created_at|date:"d/m/Y" }}</div>
+        </div>
+    {% empty %}
+        <div class="row">
+            <div>—</div>
+            <div>No games played yet</div>
+            <div>—</div>
+            <div>—</div>
+            <div>—</div>
+        </div>
+    {% endfor %}
+
+</div>
+</section>
+{% endblock %}

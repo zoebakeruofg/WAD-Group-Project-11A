@@ -1,0 +1,86 @@
+{% extends "game/base.html" %}
+{% load static %}
+
+{% block title %}Manage Artworks | ArtGuessr{% endblock %}
+{% block content %}
+<section class="manage-card">
+    <div class="manage-top-row">
+        <h2 class="manage-title">Manage Artworks</h2>
+    </div>
+
+    <div id="artwork-action-message"></div>
+
+    <div id="artwork-form-wrapper" style="display:none; margin-bottom: 25px;">
+        <form id="artwork-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" id="artwork-id">
+
+    <div class="settings-field">
+        <label for="artwork-title">Title</label>
+        <input type="text" id="artwork-title">
+    </div>
+
+    <div class="settings-field">
+        <label for="artwork-image">Artwork Image</label>
+        <input type="file" id="artwork-image" accept="image/*">
+    </div>
+
+    <div class="settings-field">
+        <label for="artwork-artist">Artist</label>
+        <input type="text" id="artwork-artist">
+    </div>
+
+    <div class="settings-field">
+        <label for="artwork-country">Country</label>
+        <input type="text" id="artwork-country">
+    </div>
+
+    <div class="settings-field">
+        <label for="artwork-year">Year</label>
+        <input type="text" id="artwork-year">
+    </div>
+
+    <div class="settings-button-row" style="margin-top: 18px;">
+        <button type="submit" class="add-artwork-btn" id="save-artwork-btn">Save Artwork</button>
+    </div>
+</form>
+    </div>
+
+    <div class="artwork-top-actions">
+        <button type="button" class="add-artwork-btn" id="add-artwork-btn">+ Add Artwork</button>
+    </div>
+
+    <div class="manage-table manage-artworks-table">
+        <div class="manage-header manage-artworks-header">
+            <span>Artwork ID</span>
+            <span>Title</span>
+            <span>Artist</span>
+            <span>Country</span>
+            <span>Year</span>
+            <span>Actions</span>
+        </div>
+
+        {% for artwork in artworks %}
+        <div class="manage-row manage-artworks-row" data-artwork-id="{{ artwork.id }}">
+            <span class="artwork-id">{{ forloop.counter }}</span>
+            <span class="artwork-title">{{ artwork.title }}</span>
+            <span class="artwork-artist">{{ artwork.artist.name }}</span>
+            <span class="artwork-country">{{ artwork.country.name }}</span>
+            <span class="artwork-year">{{ artwork.year }}</span>
+            <span class="action-buttons">
+                <button type="button" class="btn-edit edit-artwork-btn">Edit</button>
+                <button type="button" class="btn-delete delete-artwork-btn">Delete</button>
+            </span>
+        </div>
+        {% empty %}
+        <div class="manage-row no-artworks-row">
+            <span>No artworks found.</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/manage_artworks.js' %}?v=2"></script>
+{% endblock %}

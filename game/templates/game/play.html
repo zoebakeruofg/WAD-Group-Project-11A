@@ -1,1 +1,88 @@
-<h1>Play page working</h1>
+{% extends "game/base.html" %}
+{% load static %}
+
+{% block title %}Play | ArtGuessr{% endblock %}
+
+{% block nav %}
+{% endblock %}
+
+{% block content %}
+<section class="play-card wireframe-play-card">
+
+    <div class="play-top-row">
+        <a href="{% url 'home' %}" class="home-icon-link">⌂</a>
+        <div class="score-box" id="score-box">Score: 0 / 100</div>
+    </div>
+
+    <div class="play-image-wrapper">
+    <div class="play-image-box">
+        {% if artwork and artwork.image %}
+    <img src="{{ artwork.image.url }}" alt="Artwork image" class="play-art-image" id="play-art-image" draggable="false">
+{% else %}
+            Artwork Image
+        {% endif %}
+    </div>
+</div>
+
+    <form class="guess-form" id="guess-form">
+    {% csrf_token %}
+
+    <div id="play-message"></div>
+
+    <div class="guess-grid">
+        <div class="guess-item">
+            <label for="continent">Continent</label>
+            <select id="continent" name="continent">
+                <option value="">Select continent</option>
+                {% for continent in continents %}
+                    <option value="{{ continent.name }}">{{ continent.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="guess-item">
+            <label for="year">Year</label>
+            <input type="text" id="year" name="year" placeholder="Answer here">
+        </div>
+
+        <div class="guess-item">
+            <label for="region">Region</label>
+            <select id="region" name="region">
+                <option value="">Select region</option>
+                {% for region in regions %}
+                    <option value="{{ region.name }}" data-continent="{{ region.continent.name }}">
+                        {{ region.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="guess-item">
+            <label for="artist">Artist</label>
+            <input type="text" id="artist" name="artist" placeholder="Answer here">
+        </div>
+
+        <div class="guess-item">
+            <label for="country">Country</label>
+            <select id="country" name="country">
+                <option value="">Select country</option>
+                {% for country in countries %}
+                    <option value="{{ country.name }}" data-region="{{ country.region.name }}">
+                        {{ country.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="submit-row">
+        <button type="submit" class="btn-main submit-btn-green">Submit</button>
+    </div>
+</form>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/play.js' %}"></script>
+{% endblock %}

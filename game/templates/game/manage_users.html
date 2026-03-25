@@ -1,0 +1,59 @@
+{% extends "game/base.html" %}
+{% load static %}
+
+{% block title %}Manage Users | ArtGuessr{% endblock %}
+<form style="display:none;">
+    {% csrf_token %}
+</form>
+
+{% block content %}
+<section class="manage-card">
+    <div class="manage-top-row">
+        <h2 class="manage-title">Manage Users</h2>
+    </div>
+
+    <div id="user-action-message"></div>
+
+    <div class="manage-search-row">
+        <label for="user-search">Search user:</label>
+        <input type="text" id="user-search" placeholder="username">
+    </div>
+
+    <div class="manage-table manage-users-table">
+        <div class="manage-header manage-users-header">
+            <span>User ID</span>
+            <span>Username</span>
+            <span>Email</span>
+            <span>Status</span>
+            <span>Action</span>
+        </div>
+
+        {% for user_item in users %}
+        <div class="manage-row manage-users-row" data-user-id="{{ user_item.id }}">
+            <span>{{ user_item.id }}</span>
+            <span class="manage-username">{{ user_item.username }}</span>
+            <span>{{ user_item.email }}</span>
+
+            {% if user_item.is_active %}
+                <span class="user-status active-status">Active</span>
+            {% else %}
+                <span class="user-status disabled-status">Disabled</span>
+            {% endif %}
+
+            <span class="action-buttons">
+                <button class="btn-enable enable-user-btn" type="button">Enable</button>
+                <button class="btn-disable disable-user-btn" type="button">Disable</button>
+            </span>
+        </div>
+        {% empty %}
+        <div class="manage-row">
+            <span>No users found.</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/manage_users.js' %}?v=2"></script>
+{% endblock %}

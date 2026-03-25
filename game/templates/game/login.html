@@ -1,14 +1,15 @@
+{% extends "game/base.html" %}
 {% load static %}
 
-{% block title %}Create Account | ArtGuessr{% endblock %}
+{% block title %}Login | ArtGuessr{% endblock %}
 
 {% block content %}
 <section class="auth-card">
     <div class="auth-top-row">
-        <h2 class="auth-title">Create New Account</h2>
+        <h2 class="auth-title">Login</h2>
     </div>
 
-    <form class="auth-form" id="createAccountForm" method="POST">
+    <form class="auth-form" method="POST" id="loginForm">
         {% csrf_token %}
 
         {% if error %}
@@ -18,13 +19,8 @@
         {% endif %}
 
         <div class="auth-field">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email">
-        </div>
-
-        <div class="auth-field">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Choose a username">
+            <input type="text" id="username" name="username" placeholder="Enter your username">
         </div>
 
         <div class="auth-field">
@@ -33,30 +29,25 @@
         </div>
 
         <div class="auth-field">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password">
-        </div>
-
-        <div class="auth-field">
-            <label for="account_type">Account Type</label>
-            <select id="account_type" name="account_type">
+            <label for="role">Login as</label>
+            <select id="role" name="role">
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
             </select>
         </div>
 
-        <div class="auth-field" id="guid-field">
+        <div class="auth-field" id="login-guid-field" style="display:none;">
             <label for="guid">University GUID (Required for Admin)</label>
             <input type="text" id="guid" name="guid" placeholder="Enter your university GUID">
         </div>
 
         <div class="auth-button-row">
-            <button type="submit" class="auth-btn">Sign Up</button>
+            <button type="submit" class="auth-btn">Login</button>
         </div>
     </form>
 </section>
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'js/create_account.js' %}"></script>
+<script src="{% static 'js/login.js' %}"></script>
 {% endblock %}
