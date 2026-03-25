@@ -3,11 +3,13 @@ from django.contrib.auth.models import User
 import os
 import uuid
 
+
 class Artist(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
+
 
 class AdminProfile(models.Model):
     user = models.OneToOneField(
@@ -43,8 +45,7 @@ class Region(models.Model):
 class Country(models.Model):
     class Meta:
         verbose_name_plural = "Countries"
-        def __str__(self):
-            return self.name
+
     name = models.CharField(max_length=50, unique=True)
     region = models.ForeignKey(
         Region,
@@ -54,10 +55,13 @@ class Country(models.Model):
 
     def __str__(self):
         return self.name
+
+
 def artwork_image_upload_path(instance, filename):
     ext = filename.split('.')[-1]
     random_name = f"{uuid.uuid4()}.{ext}"
     return os.path.join("artworks", random_name)
+
 
 class Artwork(models.Model):
     title = models.CharField(max_length=128)
@@ -77,8 +81,8 @@ class Artwork(models.Model):
     def __str__(self):
         return self.title
 
-class GameSession(models.Model):
 
+class GameSession(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -97,7 +101,6 @@ class GameSession(models.Model):
     guess_year = models.IntegerField(null=True, blank=True)
 
     score = models.IntegerField(default=0)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

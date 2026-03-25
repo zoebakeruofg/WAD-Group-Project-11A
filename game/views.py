@@ -4,11 +4,11 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-import random
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Artwork, Artist, Country, Region, Continent
-from .models import Artwork, GameSession, AdminProfile
 from django.db.models import Avg
+import random
+
+from .models import Artwork, Artist, Country, Region, Continent, GameSession, AdminProfile
 
 
 ALLOWED_ADMIN_GUIDS = {
@@ -22,147 +22,6 @@ ALLOWED_ADMIN_GUIDS = {
 
 def home(request):
     return render(request, "game/home.html")
-
-
-@login_required(login_url='login')
-def play(request):
-    artworks = Artwork.objects.all()
-
-    if not artworks:
-        return render(request, "game/play.html", {"artwork": None})
-
-    artwork = random.choice(artworks)
-    request.session["artwork_id"] = artwork.id
-
-    continents = Continent.objects.all().order_by("name")
-    regions = Region.objects.select_related("continent").all().order_by("name")
-    countries = Country.objects.select_related("region").all().order_by("name")
-
-    return render(request, "game/play.html", {
-        "artwork": artwork,
-        "continents": continents,
-        "regions": regions,
-        "countries": countries,
-    })
-def leaderboard(request):
-    leaderboard_data = (
-        GameSession.objects
-        .values("user__username")
-        .annotate(avg_score=Avg("score"))
-        .order_by("-avg_score", "user__username")
-    )
-
-    leaderboard_rows = []
-    for entry in leaderboard_data:
-        leaderboard_rows.append({
-            "username": entry["user__username"],
-            "avg_score": round(entry["avg_score"], 2) if entry["avg_score"] is not None else 0,
-        })
-
-    context = {
-        "leaderboard_rows": leaderboard_rows
-    }
-
-    return render(request, "game/leaderboard.html", context)
-
-@login_required(login_url='login')
-def history(request):
-
-    user_sessions = (
-        GameSession.objects
-        .select_related("artwork")
-        .filter(user=request.user)
-        .order_by("-created_at")
-    )
-
-    for session in user_sessions:
-        session.correct_guesses = session.score // 25
-
-    context = {
-        "user_sessions": user_sessions
-    }
-
-    return render(request, "game/history.html", context)
-
-
-def result(request):
-    result_data = request.session.get("last_result")
-    return render(request, "game/result.html", {"result_data": result_data})
-
-
-@login_required(login_url='login')
-def profile_settings(request):
-    return render(request, "game/profile_settings.html")
-
-
-def register(request):
-    if request.method == "POST":
-        email = request.POST.get("email", "").strip()
-        username = request.POST.get("username", "").strip()
-        password = request.POST.get("password", "")
-        confirm_password = request.POST.get("confirm_password", "")
-        account_type = request.POST.get("account_type", "user").strip().lower()
-        guid = request.POST.get("guid", "").strip().upper()
-
-        if not email or not username or not password or not confirm_password:
-            return render(request, "game/create_account.html", {
-                "error": "Please fill in all fields."
-            })
-
-        if password != confirm_password:
-            return render(request, "game/create_account.html", {
-                "error": "Passwords do not match."
-            })
-
-        if User.objects.filter(username=username).exists():
-            return render(request, "game/create_account.html", {
-                "error": "Username already exists."
-            })
-
-        if User.objects.filter(email=email).exists():
-            return render(request, "game/create_account.html", {
-                "error": "Email already exists."
-            })
-
-        is_admin = False
-
-        if account_type == "admin":
-            if guid not in ALLOWED_ADMIN_GUIDS:
-                return render(request, "game/create_account.html", {
-                    "error": "This GUID is not allowed to create an admin account."
-                })
-            is_admin = True
-
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
-
-        if is_admin:
-            user.is_staff = True
-            user.save()
-            
-            AdminProfile.objects.create(
-                user=user,
-                guid=guid
-            )
-            
-        login(request, user)
-        return redirect("home")
-
-    return render(request, "game/create_account.html")
-
-
-@staff_member_required(login_url='login')
-@require_POST
-def delete_artwork(request, artwork_id):
-    try:
-        artwork = Artwork.objects.get(id=artwork_id)
-        artwork.delete()
-        return JsonResponse({"success": True})
-    except Artwork.DoesNotExist:
-        return JsonResponse({"success": False, "message": "Artwork not found."})
 
 
 def login_view(request):
@@ -216,7 +75,7 @@ def login_view(request):
 
             login(request, user)
             return redirect("home")
-        
+
         if role == "admin":
             return render(request, "game/login.html", {
                 "error": "This account is not registered as an admin."
@@ -227,9 +86,143 @@ def login_view(request):
 
     return render(request, "game/login.html")
 
+
 def logout_view(request):
     logout(request)
     return redirect("home")
+
+
+def register(request):
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+        confirm_password = request.POST.get("confirm_password", "")
+        account_type = request.POST.get("account_type", "user").strip().lower()
+        guid = request.POST.get("guid", "").strip().upper()
+
+        if not email or not username or not password or not confirm_password:
+            return render(request, "game/create_account.html", {
+                "error": "Please fill in all fields."
+            })
+
+        if password != confirm_password:
+            return render(request, "game/create_account.html", {
+                "error": "Passwords do not match."
+            })
+
+        if User.objects.filter(username=username).exists():
+            return render(request, "game/create_account.html", {
+                "error": "Username already exists."
+            })
+
+        if User.objects.filter(email=email).exists():
+            return render(request, "game/create_account.html", {
+                "error": "Email already exists."
+            })
+
+        is_admin = False
+
+        if account_type == "admin":
+            if guid not in ALLOWED_ADMIN_GUIDS:
+                return render(request, "game/create_account.html", {
+                    "error": "This GUID is not allowed to create an admin account."
+                })
+            is_admin = True
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+        if is_admin:
+            user.is_staff = True
+            user.save()
+
+            AdminProfile.objects.create(
+                user=user,
+                guid=guid
+            )
+
+        login(request, user)
+        return redirect("home")
+
+    return render(request, "game/create_account.html")
+
+
+@login_required(login_url='login')
+def play(request):
+    artworks = Artwork.objects.all()
+
+    if not artworks:
+        return render(request, "game/play.html", {"artwork": None})
+
+    artwork = random.choice(artworks)
+    request.session["artwork_id"] = artwork.id
+
+    continents = Continent.objects.all().order_by("name")
+    regions = Region.objects.select_related("continent").all().order_by("name")
+    countries = Country.objects.select_related("region").all().order_by("name")
+
+    return render(request, "game/play.html", {
+        "artwork": artwork,
+        "continents": continents,
+        "regions": regions,
+        "countries": countries,
+    })
+
+
+def leaderboard(request):
+    leaderboard_data = (
+        GameSession.objects
+        .values("user__username")
+        .annotate(avg_score=Avg("score"))
+        .order_by("-avg_score", "user__username")
+    )
+
+    leaderboard_rows = []
+    for entry in leaderboard_data:
+        leaderboard_rows.append({
+            "username": entry["user__username"],
+            "avg_score": round(entry["avg_score"], 2) if entry["avg_score"] is not None else 0,
+        })
+
+    context = {
+        "leaderboard_rows": leaderboard_rows
+    }
+
+    return render(request, "game/leaderboard.html", context)
+
+
+@login_required(login_url='login')
+def history(request):
+    user_sessions = (
+        GameSession.objects
+        .select_related("artwork")
+        .filter(user=request.user)
+        .order_by("-created_at")
+    )
+
+    for session in user_sessions:
+        session.correct_guesses = session.score // 20
+
+    context = {
+        "user_sessions": user_sessions
+    }
+
+    return render(request, "game/history.html", context)
+
+
+def result(request):
+    result_data = request.session.get("last_result")
+    return render(request, "game/result.html", {"result_data": result_data})
+
+
+@login_required(login_url='login')
+def profile_settings(request):
+    return render(request, "game/profile_settings.html")
+
 
 @staff_member_required(login_url='login')
 def manage_users(request):
@@ -241,6 +234,7 @@ def manage_users(request):
 def manage_artworks(request):
     artworks = Artwork.objects.select_related("artist", "country").all().order_by("id")
     return render(request, "game/manage_artworks.html", {"artworks": artworks})
+
 
 @staff_member_required(login_url='login')
 @require_POST
@@ -285,6 +279,17 @@ def disable_user(request, user_id):
             "success": False,
             "message": "User not found."
         })
+
+
+@staff_member_required(login_url='login')
+@require_POST
+def delete_artwork(request, artwork_id):
+    try:
+        artwork = Artwork.objects.get(id=artwork_id)
+        artwork.delete()
+        return JsonResponse({"success": True})
+    except Artwork.DoesNotExist:
+        return JsonResponse({"success": False, "message": "Artwork not found."})
 
 
 def art_info(request):
@@ -336,17 +341,16 @@ def submit_guess(request):
     if year_guess == correct_year:
         score += 20
 
-    if request.user.is_authenticated:
-        GameSession.objects.create(
-            user=request.user,
-            artwork=artwork,
-            guess_continent=continent_guess,
-            guess_region=region_guess,
-            guess_country=country_guess,
-            guess_artist=artist_guess,
-            guess_year=int(year_guess) if year_guess.isdigit() else None,
-            score=score
-        )
+    GameSession.objects.create(
+        user=request.user,
+        artwork=artwork,
+        guess_continent=continent_guess,
+        guess_region=region_guess,
+        guess_country=country_guess,
+        guess_artist=artist_guess,
+        guess_year=int(year_guess) if year_guess.isdigit() else None,
+        score=score
+    )
 
     request.session["last_result"] = {
         "score": score,
@@ -403,7 +407,8 @@ def submit_guess(request):
             "image_url": artwork.image.url if artwork.image else "",
         }
     })
-    
+
+
 @staff_member_required(login_url='login')
 @require_POST
 def add_artwork(request):
@@ -455,6 +460,8 @@ def add_artwork(request):
             "year": artwork.year
         }
     })
+
+
 @staff_member_required(login_url='login')
 @require_POST
 def edit_artwork(request, artwork_id):
