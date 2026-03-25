@@ -1,0 +1,62 @@
+{% load static %}
+
+{% block title %}Create Account | ArtGuessr{% endblock %}
+
+{% block content %}
+<section class="auth-card">
+    <div class="auth-top-row">
+        <h2 class="auth-title">Create New Account</h2>
+    </div>
+
+    <form class="auth-form" id="createAccountForm" method="POST">
+        {% csrf_token %}
+
+        {% if error %}
+            <div id="form-error-message" style="display:block;">{{ error }}</div>
+        {% else %}
+            <div id="form-error-message"></div>
+        {% endif %}
+
+        <div class="auth-field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+        </div>
+
+        <div class="auth-field">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Choose a username">
+        </div>
+
+        <div class="auth-field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+        </div>
+
+        <div class="auth-field">
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password">
+        </div>
+
+        <div class="auth-field">
+            <label for="account_type">Account Type</label>
+            <select id="account_type" name="account_type">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+
+        <div class="auth-field" id="guid-field">
+            <label for="guid">University GUID (Required for Admin)</label>
+            <input type="text" id="guid" name="guid" placeholder="Enter your university GUID">
+        </div>
+
+        <div class="auth-button-row">
+            <button type="submit" class="auth-btn">Sign Up</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/create_account.js' %}"></script>
+{% endblock %}
