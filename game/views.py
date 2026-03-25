@@ -34,8 +34,6 @@ def register(request):
 
 
 
-
-
 @login_required(login_url='login')
 def play(request):
 
@@ -46,7 +44,16 @@ def play(request):
     artwork = random.choice(artworks_available)
     request.session["artwork_id"] = artwork.id
 
-    return render(request, "game/play.html", {"artwork": artwork})
+    continents = Continent.objects.all().order_by("name")
+    regions = Region.objects.select_related("continent").all().order_by("name")
+    countries = Country.objects.select_related("region").all().order_by("name")
+
+    return render(request, "game/play.html", {
+        "artwork": artwork,
+        "continents": continents,
+        "regions": regions,
+        "countries": countries,
+    })
 
 
 @login_required(login_url='login')
@@ -200,7 +207,7 @@ def history(request):
     correct_guesses = 0
     
     for session in user_sessions:
-        correct_guesses += (session.score/20)
+        correct_guesses += (session.score//20)
 
     user_history_data = {
         "user_sessions": user_sessions,
@@ -209,21 +216,9 @@ def history(request):
     return render(request, "game/history.html", user_history_data)
 
 
-@login_required
+@login_required(login_url='login')
 def settings(request):
-    email = request.POST.get("email", "").strip().lower()
-    username = request.POST.get("username", "").strip().lower()
-    password = request.POST.get("password", "").strip().lower()
-    change_value = request.POST.get("settings-change-btn", "").strip().lower()
-
-    #password change - fix later
-    if request.method == "POST":
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, form.user)
-
-    return render(request, "game/settings.html")
+    return render(request, "game/profile_settings.html")
 
 
 
@@ -326,8 +321,9 @@ def edit_artwork(request, artwork_id):
     except ValueError:
         return JsonResponse({"success": False, "message": "Invalid year"})
 
+    artwork = get_object_or_404(Artwork, name__iexact=artwork_id)
     country = get_object_or_404(Country, name__iexact=country_name)
-    artist, _ = Artist.objects.get_or_create(name=artist_name)
+    artist, created = Artist.objects.get_or_create(name=artist_name)
 
     artwork.title = title
     artwork.artist = artist
@@ -339,8 +335,16 @@ def edit_artwork(request, artwork_id):
 
     artwork.save()
 
-    return JsonResponse({"success": True})
-
+    return JsonResponse({
+        "success": True,
+        "artwork": {
+            "id": artwork.id,
+            "title": artwork.title,
+            "artist": artwork.artist.name,
+            "country": artwork.country.name,
+            "year": artwork.year
+        }
+    })
 
 
 @staff_member_required(login_url='login')
