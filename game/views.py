@@ -10,7 +10,9 @@ from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 import random
 from django.db.models import Avg
-
+from django.http import HttpResponse, JsonResponse
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import Artwork, Artist, Country, Continent, Region, GameSession, AdminProfile
 
 ALLOWED_ADMIN_GUIDS = {
     "3010809L",
@@ -21,8 +23,8 @@ ALLOWED_ADMIN_GUIDS = {
 }
 
 def home(request):
+    context = {}
     return render(request, "game/home.html", context)
-
 
 
 #user authentication
