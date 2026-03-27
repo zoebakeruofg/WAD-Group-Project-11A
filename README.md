@@ -4,5 +4,7 @@ Upon cloning the git repository, you should run the following commands in the fo
 - python manage.py migrate game 0004_adminprofile --fake
 - python manage.py migrate
 
-After these steps have been completed, the database can be populated correctly.
+After these steps have been completed, the database can be populated correctly:
+- python populate_db.py
+
 To add art to the game, log in as an admin (using one of our GUIDs) and go to "Manage Artworks". From there you can upload files to the game!
